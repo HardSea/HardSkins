@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "1073915095531",
+    "firebase_url": "https://hardskins-8912e.firebaseio.com",
+    "project_id": "hardskins-8912e",
+    "storage_bucket": "hardskins-8912e.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1073915095531:android:072cb314c12ec758",
+        "android_client_info": {
+          "package_name": "com.hardskins.hardskins"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1073915095531-6gojs5on5sc689kk7vg2t7trhprguu0s.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hardskins.hardskins",
+            "certificate_hash": "46833a8211ca42fe69cd7e3865a75947afbd1edc"
+          }
+        },
+        {
+          "client_id": "1073915095531-bifkcvdho75e2tu762p9rqbi77m928ec.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBeDIbC5mGGpSm_0zH-wPZLnsChwVt0jtA"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 2,
+          "other_platform_oauth_client": [
+            {
+              "client_id": "1073915095531-bifkcvdho75e2tu762p9rqbi77m928ec.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        },
+        "ads_service": {
+          "status": 2
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
