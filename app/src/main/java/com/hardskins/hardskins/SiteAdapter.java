@@ -8,7 +8,6 @@ import android.preference.PreferenceManager;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
-import android.text.format.DateUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,7 +30,6 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
     private Context context;
     private static Date now;
     private static Date then;
-    CountDownTimer t;
     Timer mTimer;
     private SharedPreferences appSharedPrefs;
     private SharedPreferences.Editor prefsEditor;
@@ -47,6 +45,8 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
         SwitchCompat switchNotify;
         TextView textDate;
         LinearLayout linearCard;
+        CountDownTimer t;
+
 
 
         SiteHolder(View itemView) {
@@ -63,20 +63,12 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                     if (b){
-                        appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-                        prefsEditor = appSharedPrefs.edit();
-                        prefsEditor.putInt("notify_site"+sitename, getAdapterPosition());
-                        prefsEditor.apply();
-                        Toast.makeText(context,"Switcher ON", Toast.LENGTH_SHORT).show();
-                        textDate.setVisibility(View.VISIBLE);
-                        notifyItemMoved(getAdapterPosition(), 0);
-                        startTimer(1000);
+                        Site tempSite = sites.get(getIndexByname(String.valueOf(sitename.getText())));
+                        switchOn(Long.parseLong(tempSite.getSite_free_bonus_hour_time()));
+
                     } else {
-                        appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-                        Toast.makeText(context,"Switcher OFF", Toast.LENGTH_SHORT).show();
+                        switchOff();
                         t.cancel();
-                        notifyItemMoved(getAdapterPosition(), appSharedPrefs.getInt("notify_site"+sitename, 0));
-                        textDate.setVisibility(View.INVISIBLE);
                     }
                 }
             });
@@ -84,11 +76,20 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
         }
 
 
+        int getIndexByname(String pName)
+        {
+            for(Site _item : sites)
+            {
+                if(_item.getName().equals(pName))
+                    return sites.indexOf(_item);
+            }
+            return -1;
+        }
 
 
-
-        void startTimer(long tick) {
-            final long finish = 60000 * (Long.parseLong(sites.get(getAdapterPosition()).getSite_free_bonus_hour_time()));
+        void startTimer( long time) {
+            long tick = 1000;
+            long finish = time * 60000;
             t = new CountDownTimer(finish, tick) {
 
                 public void onTick(long millisUntilFinished) {
@@ -121,6 +122,26 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
             }.start();
         }
 
+        private void switchOn(long time){
+            Log.d("HardSkins", "Switch on clicked!");
+            appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+            prefsEditor = appSharedPrefs.edit();
+            prefsEditor.putInt("notify_site"+sitename, getAdapterPosition());
+            prefsEditor.apply();
+            Toast.makeText(context,"Switcher ON", Toast.LENGTH_SHORT).show();
+            textDate.setVisibility(View.VISIBLE);
+            notifyItemMoved(getAdapterPosition(), 0);
+            startTimer(time);
+        }
+
+        private void switchOff(){
+            Log.d("HardSkins", "Switch off clicked!");
+            appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+            Toast.makeText(context,"Switcher OFF", Toast.LENGTH_SHORT).show();
+            notifyItemMoved(getAdapterPosition(), appSharedPrefs.getInt("notify_site"+sitename, getAdapterPosition()));
+            textDate.setVisibility(View.INVISIBLE);
+        }
+
         @Override
         public void onClick(View view) {
             Intent intent = new Intent(context, SiteActivity.class);
@@ -138,32 +159,17 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
                 Toast.makeText(context, "Уведомления уже включены", Toast.LENGTH_SHORT).show();
                 return true;
             } else {
-                showTextDate(getAdapterPosition());
+                Log.d("HardSkins", "Long tap on linear layout!");
                 switchNotify.setChecked(true);
+                Site tempSite = sites.get(getIndexByname(String.valueOf(sitename.getText())));
+                switchOn(Long.parseLong(tempSite.getSite_free_bonus_hour_time()));
                 Toast.makeText(context, "Уведомления включено", Toast.LENGTH_SHORT).show();
                 return true;
             }
 
         }
 
-        void showTextDate(int position){
-            MainActivity.mSites.get(position).setSite_isnotify("1");
 
-            textDate.setVisibility(View.VISIBLE);
-            now = new Date();
-            then = MainActivity.addMinutesToDate(Integer.parseInt(sites.get(position).getSite_free_bonus_hour_time()), now);
-
-            String remaining1 = DateUtils.formatElapsedTime ((then.getTime() - now.getTime())/1000);
-            textDate.setText(remaining1);
-            SharedPreferences appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-            SharedPreferences.Editor prefsEditor = appSharedPrefs.edit();
-
-            prefsEditor.putLong(sites.get(position).getName(), now.getTime());
-            prefsEditor.apply();
-
-
-
-        }
 
 
     }
