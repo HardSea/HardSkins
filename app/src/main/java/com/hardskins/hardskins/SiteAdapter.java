@@ -65,7 +65,6 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
                     if (b){
                         Site tempSite = sites.get(getIndexByname(String.valueOf(sitename.getText())));
                         switchOn(Long.parseLong(tempSite.getSite_free_bonus_hour_time()));
-
                     } else {
                         switchOff();
                         t.cancel();
@@ -120,6 +119,8 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
                     cancel();
                 }
             }.start();
+
+
         }
 
         private void switchOn(long time){
@@ -215,11 +216,13 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
+
     }
 
     SiteAdapter(List<Site> sites, Context context) {
         this.sites = sites;
         this.context = context;
+
     }
 
 

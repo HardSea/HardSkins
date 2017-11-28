@@ -99,6 +99,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         createNavigationMenu();
 
+        startServiceTimer();
+
         createRecyclerView();         //creating recyclerview and refreshing new changes in recycler view
         signInFireBase();             // signInAnonymusly to FireBase
 
@@ -122,9 +124,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
 
+    protected void startServiceTimer(){
+        startService(new Intent(this, BroadcastService.class));
+        Log.d("BroadcastService", "Started service");
+    }
+
 
     @Override
     protected void onStop() {
+
+
 
         appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
         prefsEditor = appSharedPrefs.edit();
