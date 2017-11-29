@@ -30,26 +30,28 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
     private Context context;
     private static Date now;
     private static Date then;
-    Timer mTimer;
+    private Timer mTimer;
     private SharedPreferences appSharedPrefs;
     private SharedPreferences.Editor prefsEditor;
+    private TimerStarter firstStarter;
 
 
 
 
 
     class SiteHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener{
-        CardView cardView;
-        TextView sitename;
-        ImageView sitePhoto;
-        SwitchCompat switchNotify;
-        TextView textDate;
-        LinearLayout linearCard;
-        CountDownTimer t;
+        private CardView cardView;
+        private TextView sitename;
+        private ImageView sitePhoto;
+        private SwitchCompat switchNotify;
+        private TextView textDate;
+        private LinearLayout linearCard;
+        private CountDownTimer t;
+        private TimerStarter secondStarter;
 
 
 
-        SiteHolder(View itemView) {
+        SiteHolder(View itemView, TimerStarter timerStarter) {
             super(itemView);
             cardView = itemView.findViewById(R.id.cardView);
             sitename = itemView.findViewById(R.id.site_name);
@@ -59,15 +61,18 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
             linearCard = itemView.findViewById(R.id.linearCard);
             linearCard.setOnClickListener(this);
             linearCard.setOnLongClickListener(this);
+            secondStarter = timerStarter;
             switchNotify.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                     if (b){
                         Site tempSite = sites.get(getIndexByname(String.valueOf(sitename.getText())));
                         switchOn(Long.parseLong(tempSite.getSite_free_bonus_hour_time()));
+                        secondStarter.startServiceTimer();
                     } else {
                         switchOff();
                         t.cancel();
+
                     }
                 }
             });
@@ -121,6 +126,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
             }.start();
 
 
+
         }
 
         private void switchOn(long time){
@@ -133,6 +139,8 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
             textDate.setVisibility(View.VISIBLE);
             notifyItemMoved(getAdapterPosition(), 0);
             startTimer(time);
+           // starter.startServiceTimer();
+
         }
 
         private void switchOff(){
@@ -188,7 +196,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
     @Override
     public SiteHolder onCreateViewHolder(ViewGroup viewGroup, int i) {
         View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card, viewGroup, false);
-        return new SiteHolder(v);
+        return new SiteHolder(v, firstStarter);
     }
 
     @Override
@@ -219,9 +227,10 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
 
     }
 
-    SiteAdapter(List<Site> sites, Context context) {
+    SiteAdapter(List<Site> sites, Context context, TimerStarter timerStarter) {
         this.sites = sites;
         this.context = context;
+        firstStarter = timerStarter;
 
     }
 

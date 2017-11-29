@@ -44,7 +44,7 @@ import java.util.List;
 
 import static java.lang.Thread.sleep;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener{
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, TimerStarter{
 
     protected static List<Site> mSites = new ArrayList<>();;
     private Context context;
@@ -61,7 +61,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mSites.add(new Site("TempSite"));
 
     }
-
 
 
     @Override
@@ -99,13 +98,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         createNavigationMenu();
 
-        startServiceTimer();
 
         createRecyclerView();         //creating recyclerview and refreshing new changes in recycler view
         signInFireBase();             // signInAnonymusly to FireBase
-
-
-
 
 
 
@@ -123,8 +118,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-
-    protected void startServiceTimer(){
+    @Override
+    public void startServiceTimer(){
         startService(new Intent(this, BroadcastService.class));
         Log.d("BroadcastService", "Started service");
     }
@@ -231,7 +226,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         LinearLayoutManager linearManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearManager);
-        siteAdapter = new SiteAdapter(mSites, context);
+
+        siteAdapter = new SiteAdapter(mSites, context, this);
         recyclerView.setAdapter(siteAdapter);
 
 //        recyclerView.addOnItemTouchListener(
