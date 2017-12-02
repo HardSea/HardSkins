@@ -26,7 +26,7 @@ import java.util.Timer;
 
 public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
 
-    private List<Site> sites;
+    private static List<Site> sites;
     private Context context;
     private static Date now;
     private static Date then;
@@ -183,6 +183,15 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
 
 
 
+    }
+
+
+    static void cleanList(){
+        sites.clear();
+    }
+
+    static void setSites(List<Site> sites1){
+        sites = sites1;
     }
 
 

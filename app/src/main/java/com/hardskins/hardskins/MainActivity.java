@@ -55,11 +55,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SharedPreferences appSharedPrefs;
     private SharedPreferences.Editor prefsEditor;
     private String TAG = "HardSkins";
+    private RecyclerView recyclerView;
 
-    private static void crateSite(){
-        mSites.add(new Site("TempSite"));
 
-    }
 
 
     @Override
@@ -67,33 +65,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        crateSite();
+
 
 
         context = this;
-
-        SharedPreferences wmbPreference = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean isFirstRun = wmbPreference.getBoolean("FIRSTRUN", true);
-        if (isFirstRun){
-            mSites.add(new Site("Temp site"));
-            Log.d(TAG, "Site add!");
-            mSites.add(new Site("Temp site"));
-            Log.d(TAG, "Site add!");
-            getOnlineElements();
-            // Code to run once
-            SharedPreferences.Editor editor = wmbPreference.edit();
-            if (isOnline()){
-                editor.putBoolean("FIRSTRUN", false);
-                Log.d(TAG, "First time has been closed!");
-
-            } else {
-                editor.putBoolean("FIRSTRUN", true);
-                Log.d(TAG, "First open, beacouse not internet!");
-            }
-            editor.apply();
-        } else{
-            initializeData();
-        }
+        firstrun(); // check on first run and initializedata
 
         createNavigationMenu();
 
@@ -117,7 +93,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     }
 
-
     @Override
     public void startServiceTimer(int position){
 
@@ -133,6 +108,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d("BroadcastService", "Started service");
     }
 
+
     @Override
     public void stopServiceTimer(int position) {
         startService(new Intent(this, BroadcastService.class)
@@ -145,7 +121,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         Log.d("BroadcastService", "Stoped service");
     }
-
 
     private BroadcastReceiver br = new BroadcastReceiver() {
         @Override
@@ -163,12 +138,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return netInfo != null && netInfo.isConnectedOrConnecting();
     } // condition on online
 
+
     protected static Date addMinutesToDate(int minutes, Date beforeTime){
         final long ONE_MINUTE_IN_MILLIS = 60000;//millisecs
 
         long curTimeInMs = beforeTime.getTime();
         Date afterAddingMins = new Date(curTimeInMs + (minutes * ONE_MINUTE_IN_MILLIS));
         return afterAddingMins;
+    }
+
+    private void firstrun() {
+        SharedPreferences wmbPreference = PreferenceManager.getDefaultSharedPreferences(this);
+        boolean isFirstRun = wmbPreference.getBoolean("FIRSTRUN", true);
+        if (isFirstRun){
+            mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_0)));
+            Log.d(TAG, "Site add!");
+            mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_1)));
+            Log.d(TAG, "Site add!");
+            mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_2)));
+            Log.d(TAG, "Site add!");
+
+            getOnlineElements();
+            // Code to run once
+            SharedPreferences.Editor editor = wmbPreference.edit();
+            if (isOnline()){
+                editor.putBoolean("FIRSTRUN", false);
+                Log.d(TAG, "First time has been closed!");
+
+            } else {
+                editor.putBoolean("FIRSTRUN", true);
+                Log.d(TAG, "First open, beacouse not internet!");
+            }
+            editor.apply();
+        } else {
+            initializeData();
+        }
     }
 
     protected void initializeData(){
@@ -202,11 +206,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected static void getOnlineElements(){
         final List <Site> tempmSites = new ArrayList<>();
         final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-        FirebaseDatabase.getInstance().getReference();
+
         DatabaseReference myRef = database.child("site");
         myRef.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
+                mSites.clear();
+                mSites = tempmSites;
+                SiteAdapter.cleanList();
+                SiteAdapter.setSites(mSites);
+
                 for(DataSnapshot tempSnapshot : dataSnapshot.getChildren()){
                     Site tempSite = tempSnapshot.getValue(Site.class);
                     tempmSites.add(tempSite);
@@ -229,33 +238,23 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 Log.d("HardSkins", "Failed to read value", databaseError.toException());
             }
+
+
         });
-        mSites.clear();
-        mSites = tempmSites;
+
+
+
+
 
     } //Download element from Firebase
 
     private void createRecyclerView(){
-        RecyclerView recyclerView = findViewById(R.id.recycler_view);
+        recyclerView = findViewById(R.id.recycler_view);
         LinearLayoutManager linearManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearManager);
 
         siteAdapter = new SiteAdapter(mSites, context, this);
         recyclerView.setAdapter(siteAdapter);
-
-//        recyclerView.addOnItemTouchListener(
-//                new RecyclerItemClickListener(context, recyclerView,new RecyclerItemClickListener.OnItemClickListener() {
-//                    @Override public void onItemClick(View view, int position) {
-//
-//                        Intent intent = new Intent(context, SiteActivity.class);
-//                        intent.putExtra("position", position);
-//                        startActivity(intent);
-//                    }
-//
-//                    @Override public void onLongItemClick(View view, int position) {
-//                    }
-//                })
-//        );
 
         try{
             sleep(1000);
@@ -312,6 +311,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 return true;
             case R.id.refresh_recyclerview:
                 siteAdapter.notifyDataSetChanged();
+
+
                 return true;
             default:
                 return super.onOptionsItemSelected(item);

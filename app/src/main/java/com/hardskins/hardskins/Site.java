@@ -14,6 +14,15 @@ public class Site{
     private String site_ref_code;
     private String site_ref_link;
     private String site_isnotify;
+    private long site_time_to_notify;
+
+    public long getSite_time_to_notify() {
+        return site_time_to_notify;
+    }
+
+    public void setSite_time_to_notify(long site_time_to_notify) {
+        this.site_time_to_notify = site_time_to_notify;
+    }
 
     public Site(){
          super();
