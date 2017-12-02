@@ -3,78 +3,79 @@ package com.hardskins.hardskins;
 
 import android.app.Service;
 import android.content.Intent;
-import android.os.CountDownTimer;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
 import android.util.Log;
 
-public class BroadcastService extends Service {
+import java.util.ArrayList;
+import java.util.List;
+
+public class  BroadcastService extends Service {
 
     private final static String TAG = "BroadcastService";
-    private final static String COUNTDOWN_BR = "hardskins.countdown_br";
+    public final static String COUNTDOWN_BR = "hardskins.countdown_br";
     Intent bi = new Intent(COUNTDOWN_BR);
-    CountDownTimer cdt = null;
     private int cnt_service = 0;
-
-    private void startTimer(){
-        cdt = new CountDownTimer(20000,1000) {
-            @Override
-            public void onTick(long l) {
-                Log.d(TAG, "SECOND Countdown timer seconds reamaning: " + l/1000);
-                bi.putExtra("countdown", l);
-                sendBroadcast(bi);
-            }
-
-            @Override
-            public void onFinish() {
-                Log.d(TAG, "SECOND timer finished.");
-            }
-        }.start();
-    }
+    private List<Timer> mTimers = new ArrayList<>();
 
 
 
-    @Override
-    public void onCreate() {
-        super.onCreate();
-        Log.d(TAG, "Starting service timer...");
-        cnt_service++;
-        Log.d(TAG, "Count service = " + cnt_service);
 
-        startTimer();
-
-        cdt = new CountDownTimer(30000, 1000) {
-            @Override
-            public void onTick(long l) {
-                Log.d(TAG, "FIRST Countdown timer seconds reamaning: " + l/1000);
-                bi.putExtra("countdown", l);
-                sendBroadcast(bi);
-            }
-
-            @Override
-            public void onFinish() {
-                Log.d(TAG, "FIRST timer finished.");
-            }
-        }.start();
-    }
 
     @Override
     public void onDestroy() {
-        cdt.cancel();
         Log.d(TAG, "Timer cancelled");
         super.onDestroy();
     }
 
+
+
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
-        cnt_service++;
-        Log.d(TAG, "Calling onStart command");
-        Log.d(TAG, "Count service = " + cnt_service);
-        return super.onStartCommand(intent, flags, startId);
+
+
+        if ("SERVICE_START".equals(intent.getAction())){
+            int time = Integer.parseInt((intent.getStringExtra("time")));
+            String currentTimer = intent.getStringExtra("nameSite");
+
+            Timer timer = new Timer(time, currentTimer);
+            timer.startTimer();
+            mTimers.add(timer);
+
+            cnt_service++;
+            Log.d(TAG, "Calling onStart command");
+            Log.d(TAG, "Count service = " + cnt_service);
+        } else if ("SERVICE_STOP".equals(intent.getAction())){
+            String nameSite = intent.getStringExtra("nameSite");
+            mTimers.get(getIndexByname(nameSite)).stopTimer();
+            mTimers.remove(getIndexByname(nameSite));
+            cnt_service--;
+            Log.d(TAG, "Calling onStop command");
+            Log.d(TAG, "Count service = " + cnt_service);
+
+        }
+
+
+
+
+
+
+        return START_REDELIVER_INTENT;
+
+
+
 
     }
 
-    @Nullable
+    private int getIndexByname(String timerName)
+    {
+        for(Timer _item : mTimers)
+        {
+            if(_item.getNameTimer().equals(timerName))
+                return mTimers.indexOf(_item);
+        }
+        return -1;
+    }
+
     @Override
     public IBinder onBind(Intent intent) {
         return null;

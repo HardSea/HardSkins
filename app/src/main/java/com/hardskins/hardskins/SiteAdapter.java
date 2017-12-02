@@ -65,13 +65,15 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
             switchNotify.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
+                    int tempPosition = getIndexByname(String.valueOf(sitename.getText()));
+                    Site tempSite = sites.get(tempPosition);
                     if (b){
-                        Site tempSite = sites.get(getIndexByname(String.valueOf(sitename.getText())));
                         switchOn(Long.parseLong(tempSite.getSite_free_bonus_hour_time()));
-                        secondStarter.startServiceTimer();
+                        secondStarter.startServiceTimer(tempPosition);
                     } else {
                         switchOff();
                         t.cancel();
+                        secondStarter.stopServiceTimer(tempPosition);
 
                     }
                 }
@@ -80,7 +82,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
         }
 
 
-        int getIndexByname(String pName)
+        private int getIndexByname(String pName)
         {
             for(Site _item : sites)
             {

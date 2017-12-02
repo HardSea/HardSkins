@@ -1,7 +1,9 @@
 package com.hardskins.hardskins;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -17,10 +19,8 @@ import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.GestureDetector;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Toast;
 
@@ -46,7 +46,7 @@ import static java.lang.Thread.sleep;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, TimerStarter{
 
-    protected static List<Site> mSites = new ArrayList<>();;
+    protected static List<Site> mSites = new ArrayList<>();
     private Context context;
     private com.github.clans.fab.FloatingActionMenu fab;
     private final String TAG_PREFS = "com.hardskins.hardskins";
@@ -55,7 +55,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SharedPreferences appSharedPrefs;
     private SharedPreferences.Editor prefsEditor;
     private String TAG = "HardSkins";
-
 
     private static void crateSite(){
         mSites.add(new Site("TempSite"));
@@ -99,6 +98,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         createNavigationMenu();
 
 
+
         createRecyclerView();         //creating recyclerview and refreshing new changes in recycler view
         signInFireBase();             // signInAnonymusly to FireBase
 
@@ -119,27 +119,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     @Override
-    public void startServiceTimer(){
-        startService(new Intent(this, BroadcastService.class));
+    public void startServiceTimer(int position){
+
+        startService(new Intent(this, BroadcastService.class)
+                .putExtra("time", mSites.get(position).getSite_free_bonus_hour_time())
+                .putExtra("nameSite", mSites.get(position).getSite_name())
+                .setAction("SERVICE_START"));
+
+
+
+
+
         Log.d("BroadcastService", "Started service");
     }
 
-
     @Override
-    protected void onStop() {
+    public void stopServiceTimer(int position) {
+        startService(new Intent(this, BroadcastService.class)
+                .putExtra("nameSite", mSites.get(position).getSite_name())
+                .setAction("SERVICE_STOP"));
 
 
 
-        appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
-        prefsEditor = appSharedPrefs.edit();
 
-        String json = gson.toJson(mSites);
-        prefsEditor.putString(TAG_PREFS, json);
-        prefsEditor.apply();
-        Log.d(TAG, "Get save array list successful!");
 
-        super.onStop();
-    } //save data to sharedpreference
+        Log.d("BroadcastService", "Stoped service");
+    }
+
+
+    private BroadcastReceiver br = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+        }
+    };
+
 
     public boolean isOnline() {
         ConnectivityManager cm =
@@ -157,7 +171,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return afterAddingMins;
     }
 
-
     protected void initializeData(){
         appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
         Gson gson = new Gson();
@@ -169,6 +182,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         Log.d(TAG, "Size of loading array = " + mSites.size());
     } //load saved data from sharedpreference
+
 
     private void createNavigationMenu(){
         Toolbar toolbar =  findViewById(R.id.toolbar);
@@ -220,7 +234,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mSites = tempmSites;
 
     } //Download element from Firebase
-
 
     private void createRecyclerView(){
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
@@ -362,59 +375,49 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
 
-
-    public static class RecyclerItemClickListener implements RecyclerView.OnItemTouchListener {
-        private OnItemClickListener mListener;
-
-        public interface OnItemClickListener {
-            void onItemClick(View view, int position);
-
-            void onLongItemClick(View view, int position);
-        }
-
-        GestureDetector mGestureDetector;
-
-        RecyclerItemClickListener(Context context, final RecyclerView recyclerView, OnItemClickListener listener) {
-            mListener = listener;
-            mGestureDetector = new GestureDetector(context, new GestureDetector.SimpleOnGestureListener() {
-                @Override
-                public boolean onSingleTapUp(MotionEvent e) {
-                    return true;
-                }
-
-                @Override
-                public void onLongPress(MotionEvent e) {
-                    View child = recyclerView.findChildViewUnder(e.getX(), e.getY());
-                    if (child != null && mListener != null) {
-                        mListener.onLongItemClick(child, recyclerView.getChildAdapterPosition(child));
-                    }
-                }
-            });
-        }
-
-        @Override public boolean onInterceptTouchEvent(RecyclerView view, MotionEvent e) {
-            View childView = view.findChildViewUnder(e.getX(), e.getY());
-            if (childView != null && mListener != null && mGestureDetector.onTouchEvent(e)) {
-                mListener.onItemClick(childView, view.getChildAdapterPosition(childView));
-                return true;
-            }
-            return false;
-        }
-
-        @Override public void onTouchEvent(RecyclerView view, MotionEvent motionEvent) { }
-
-        @Override
-        public void onRequestDisallowInterceptTouchEvent (boolean disallowIntercept){}
-    }
-
     @Override
     protected void onDestroy() {
-        super.onDestroy();
+        stopService(new Intent(this, BroadcastService.class));
+        Log.i("BroadcastService", "Stopped service");
 
         for (int position = 0; position < mSites.size(); position++) {
             Picasso.with(context).invalidate(mSites.get(position).getSite_photo_url());
         }
+
+        super.onDestroy();
     }
 
+    @Override
+    protected void onPause() {
+        super.onPause();
+        unregisterReceiver(br);
+        Log.d("BroadcastService", "Uregistered broadcast receiver");
+    }
 
+    @Override
+    protected void onStop() {
+        try {
+            unregisterReceiver(br);
+        } catch (Exception e) {
+            Log.d("BroadcastService", "Uregistered broadcast receiver"); // Receiver was probably already stopped in onPause()
+        }
+
+        appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
+        prefsEditor = appSharedPrefs.edit();
+
+        String json = gson.toJson(mSites);
+        prefsEditor.putString(TAG_PREFS, json);
+        prefsEditor.apply();
+        Log.d(TAG, "Get save array list successful!");
+
+        super.onStop();
+    } //save data to sharedpreference
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        registerReceiver(br, new IntentFilter(BroadcastService.COUNTDOWN_BR));
+        Log.d("BroadcastService", "Registered broadcast receiver");
+
+    }
 }
