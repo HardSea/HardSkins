@@ -56,6 +56,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SharedPreferences.Editor prefsEditor;
     private String TAG = "HardSkins";
     private RecyclerView recyclerView;
+    public final static String COUNTDOWN_BR = "hardskins.countdown_br";
+
 
 
 
@@ -108,6 +110,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d("BroadcastService", "Started service");
     }
 
+    @Override
+    public void continueServicetimer(int position) {
+        startService(new Intent(this, BroadcastService.class)
+                .putExtra("time", mSites.get(position).getSite_time_to_notify())
+                .putExtra("nameSite", mSites.get(position).getSite_name())
+                .setAction("SERVICE_CONTINUE"));
+
+
+
+
+
+        Log.d("BroadcastService", "Started service");
+    }
+
 
     @Override
     public void stopServiceTimer(int position) {
@@ -122,12 +138,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d("BroadcastService", "Stoped service");
     }
 
-    private BroadcastReceiver br = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
 
-        }
-    };
 
 
     public boolean isOnline() {
@@ -151,11 +162,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         SharedPreferences wmbPreference = PreferenceManager.getDefaultSharedPreferences(this);
         boolean isFirstRun = wmbPreference.getBoolean("FIRSTRUN", true);
         if (isFirstRun){
-            mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_0)));
+            mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_0), "0"));
             Log.d(TAG, "Site add!");
-            mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_1)));
+            mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_1), "0"));
             Log.d(TAG, "Site add!");
-            mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_2)));
+            mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_2), "0"));
             Log.d(TAG, "Site add!");
 
             getOnlineElements();
@@ -264,6 +275,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             e.printStackTrace();
         }
 
+
+
         fab = findViewById(R.id.fab);
         recyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -274,6 +287,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     fab.showMenu(true);
             }
         });
+
+
 
 
     }
@@ -385,14 +400,45 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Picasso.with(context).invalidate(mSites.get(position).getSite_photo_url());
         }
 
+
+
         super.onDestroy();
     }
+
+    BroadcastReceiver br = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            updateGUI(intent);
+        }
+    };
+
+    private void updateGUI(Intent intent) {
+        if (intent.getExtras() != null) {
+            String nameTimer = intent.getStringExtra("name");
+            long time = intent.getLongExtra("time", 0);
+            mSites.get(getIndexByname(nameTimer))
+                  .setSite_time_to_notify(time);
+
+        }
+    }
+
+    private int getIndexByname(String timerName)
+    {
+        for(Site _item : mSites)
+        {
+            if(_item.getSite_name().equals(timerName))
+                return mSites.indexOf(_item);
+        }
+        return -1;
+    }
+
 
     @Override
     protected void onPause() {
         super.onPause();
         unregisterReceiver(br);
         Log.d("BroadcastService", "Uregistered broadcast receiver");
+
     }
 
     @Override
@@ -406,6 +452,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
         prefsEditor = appSharedPrefs.edit();
 
+
         String json = gson.toJson(mSites);
         prefsEditor.putString(TAG_PREFS, json);
         prefsEditor.apply();
@@ -417,7 +464,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(br, new IntentFilter(BroadcastService.COUNTDOWN_BR));
+        registerReceiver(br, new IntentFilter(COUNTDOWN_BR));
         Log.d("BroadcastService", "Registered broadcast receiver");
 
     }

@@ -34,6 +34,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
     private SharedPreferences appSharedPrefs;
     private SharedPreferences.Editor prefsEditor;
     private TimerStarter firstStarter;
+    private boolean onBind;
 
 
 
@@ -62,41 +63,44 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
             linearCard.setOnClickListener(this);
             linearCard.setOnLongClickListener(this);
             secondStarter = timerStarter;
+
+
+
             switchNotify.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                    int tempPosition = getIndexByname(String.valueOf(sitename.getText()));
-                    Site tempSite = sites.get(tempPosition);
-                    if (b){
-                        switchOn(Long.parseLong(tempSite.getSite_free_bonus_hour_time()));
-                        secondStarter.startServiceTimer(tempPosition);
-                    } else {
-                        switchOff();
-                        t.cancel();
-                        secondStarter.stopServiceTimer(tempPosition);
+                    if (!onBind){
+                        int tempPosition = getIndexByname(String.valueOf(sitename.getText()));
+                        Site tempSite = sites.get(tempPosition);
+                        if (b){
+                            switchOn(Long.parseLong(tempSite.getSite_free_bonus_hour_time()));
+                            secondStarter.startServiceTimer(tempPosition);
 
+                        } else {
+                            switchOff();
+                            t.cancel();
+                            secondStarter.stopServiceTimer(tempPosition);
+
+                        }
                     }
+
                 }
             });
 
+
+
+
+
         }
 
 
-        private int getIndexByname(String pName)
-        {
-            for(Site _item : sites)
-            {
-                if(_item.getName().equals(pName))
-                    return sites.indexOf(_item);
-            }
-            return -1;
-        }
+
 
 
         void startTimer( long time) {
             long tick = 1000;
-            long finish = time * 60000;
-            t = new CountDownTimer(finish, tick) {
+
+            t = new CountDownTimer(time, tick) {
 
                 public void onTick(long millisUntilFinished) {
                     //     long remainedSecs = millisUntilFinished / 1000;
@@ -132,25 +136,30 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
         }
 
         private void switchOn(long time){
+            sites.get(getIndexByname(String.valueOf(sitename.getText()))).setSite_isnotify("1");
+            MainActivity.mSites.get(getIndexByname(String.valueOf(sitename.getText()))).setSite_isnotify("1");
             Log.d("HardSkins", "Switch on clicked!");
-            appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-            prefsEditor = appSharedPrefs.edit();
-            prefsEditor.putInt("notify_site"+sitename, getAdapterPosition());
-            prefsEditor.apply();
+         //   appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        //    prefsEditor = appSharedPrefs.edit();
+        //    prefsEditor.putInt("notify_site"+sitename, getAdapterPosition());
+        //    prefsEditor.apply();
             Toast.makeText(context,"Switcher ON", Toast.LENGTH_SHORT).show();
             textDate.setVisibility(View.VISIBLE);
-            notifyItemMoved(getAdapterPosition(), 0);
+           // notifyItemMoved(getAdapterPosition(), 0);
             startTimer(time);
-           // starter.startServiceTimer();
-
         }
 
         private void switchOff(){
+            sites.get(getIndexByname(String.valueOf(sitename.getText()))).setSite_time_to_notify(0);
+            MainActivity.mSites.get(getIndexByname(String.valueOf(sitename.getText()))).setSite_time_to_notify(0);
+            
             Log.d("HardSkins", "Switch off clicked!");
-            appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+       //     appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
             Toast.makeText(context,"Switcher OFF", Toast.LENGTH_SHORT).show();
-            notifyItemMoved(getAdapterPosition(), appSharedPrefs.getInt("notify_site"+sitename, getAdapterPosition()));
+       //     notifyItemMoved(getAdapterPosition(), appSharedPrefs.getInt("notify_site"+sitename, getAdapterPosition()));
             textDate.setVisibility(View.INVISIBLE);
+            sites.get(getIndexByname(String.valueOf(sitename.getText()))).setSite_isnotify("0");
+            MainActivity.mSites.get(getIndexByname(String.valueOf(sitename.getText()))).setSite_isnotify("0");
         }
 
         @Override
@@ -196,7 +205,15 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
 
 
 
-
+    private int getIndexByname(String pName)
+    {
+        for(Site _item : sites)
+        {
+            if(_item.getName().equals(pName))
+                return sites.indexOf(_item);
+        }
+        return -1;
+    }
 
 
     @Override
@@ -223,11 +240,36 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
             i++;
         }
 
+        onBind = true;
 
+        if (sites.get(position).getSite_isnotify() ) {
+            siteHolder.switchNotify.setChecked(true);
+            int tempPosition = getIndexByname(String.valueOf(siteHolder.sitename.getText()));
+            Site tempSite = sites.get(tempPosition);
+            Log.d("HardSkins", "Position: " + position);
+            appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+
+
+            siteHolder.textDate.setVisibility(View.VISIBLE);
+
+
+            siteHolder.startTimer(tempSite.getSite_time_to_notify());
+
+            siteHolder.secondStarter.continueServicetimer(tempPosition);
+
+
+
+        }
+
+
+
+        onBind = false;
 
 
 
     }
+
+
 
 
 
@@ -244,6 +286,8 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
         firstStarter = timerStarter;
 
     }
+
+
 
 
 

@@ -28,7 +28,11 @@ public class Site{
          super();
     }
 
-    public Site(String temp){
+    public void setSite_isnotify(String site_isnotify) {
+        this.site_isnotify = site_isnotify;
+    }
+
+    public Site(String temp, String site_isnotify){
         site_name = temp;
         site_address = temp;
         site_photo_url = temp;
@@ -41,6 +45,8 @@ public class Site{
         site_free_bonus_reg_count = temp;
         site_ref_code = temp;
         site_ref_link = temp;
+        this.site_isnotify = site_isnotify;
+
     }
 
     public void setName(String name) {
@@ -162,13 +168,17 @@ public class Site{
         return site_name;
     }
 
-    public String getSite_isnotify() {
-        return site_isnotify;
+    public boolean getSite_isnotify() {
+        boolean site_notify = false;
+        if (Integer.parseInt(site_isnotify) == 1){
+            site_notify = true;
+        } else if (Integer.parseInt(site_isnotify) == 0){
+            site_notify = false;
+        }
+        return site_notify;
     }
 
-    public void setSite_isnotify(String site_isnotify) {
-        this.site_isnotify = site_isnotify;
-    }
+   
 
 
 
