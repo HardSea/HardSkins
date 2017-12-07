@@ -400,6 +400,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             Picasso.with(context).invalidate(mSites.get(position).getSite_photo_url());
         }
 
+        Date date = new Date();
+        long time = date.getTime();
+        appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefsEditor = appSharedPrefs.edit();
+        prefsEditor.putLong("LastCloseAppTime", time);
+        prefsEditor.apply();
+
 
 
         super.onDestroy();

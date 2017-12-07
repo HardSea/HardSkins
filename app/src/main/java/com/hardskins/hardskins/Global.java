@@ -2,9 +2,13 @@ package com.hardskins.hardskins;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.preference.PreferenceManager;
 
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
+
+import java.util.Date;
 
 
 public class Global extends Application {
@@ -27,7 +31,13 @@ public class Global extends Application {
         built.setLoggingEnabled(true);
         Picasso.setSingletonInstance(built);
 
+        Date date = new Date();
+        long time = date.getTime();
 
+        SharedPreferences appshared = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = appshared.edit();
+        editor.putLong("LastOpenTime", time);
+        editor.apply();
 
 
 

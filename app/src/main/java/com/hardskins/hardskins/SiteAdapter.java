@@ -70,7 +70,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                     if (!onBind){
-                        int tempPosition = getIndexByname(String.valueOf(sitename.getText()));
+                        int tempPosition = getIndexByName(String.valueOf(sitename.getText()));
                         Site tempSite = sites.get(tempPosition);
                         if (b){
                             switchOn(Long.parseLong(tempSite.getSite_free_bonus_hour_time()));
@@ -136,30 +136,28 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
         }
 
         private void switchOn(long time){
-            sites.get(getIndexByname(String.valueOf(sitename.getText()))).setSite_isnotify("1");
-            MainActivity.mSites.get(getIndexByname(String.valueOf(sitename.getText()))).setSite_isnotify("1");
+            sites.get(getIndexByName(String.valueOf(sitename.getText()))).setSite_isnotify("1");
+            MainActivity.mSites.get(getIndexByName(String.valueOf(sitename.getText()))).setSite_isnotify("1");
             Log.d("HardSkins", "Switch on clicked!");
-         //   appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-        //    prefsEditor = appSharedPrefs.edit();
-        //    prefsEditor.putInt("notify_site"+sitename, getAdapterPosition());
-        //    prefsEditor.apply();
             Toast.makeText(context,"Switcher ON", Toast.LENGTH_SHORT).show();
             textDate.setVisibility(View.VISIBLE);
-           // notifyItemMoved(getAdapterPosition(), 0);
+           // notifyItemMoved(getAdapterPosition(), 0); //working not correct
             startTimer(time);
         }
 
         private void switchOff(){
-            sites.get(getIndexByname(String.valueOf(sitename.getText()))).setSite_time_to_notify(0);
-            MainActivity.mSites.get(getIndexByname(String.valueOf(sitename.getText()))).setSite_time_to_notify(0);
-            
+            sites.get(getIndexByName(String.valueOf(sitename.getText()))).setSite_time_to_notify(0);
+            MainActivity.mSites.get(getIndexByName(String.valueOf(sitename.getText()))).setSite_time_to_notify(0);
+            appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+            prefsEditor = appSharedPrefs.edit();
+            prefsEditor.remove("StartTimerTime" + sitename.getText()).apply();
             Log.d("HardSkins", "Switch off clicked!");
        //     appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
             Toast.makeText(context,"Switcher OFF", Toast.LENGTH_SHORT).show();
        //     notifyItemMoved(getAdapterPosition(), appSharedPrefs.getInt("notify_site"+sitename, getAdapterPosition()));
             textDate.setVisibility(View.INVISIBLE);
-            sites.get(getIndexByname(String.valueOf(sitename.getText()))).setSite_isnotify("0");
-            MainActivity.mSites.get(getIndexByname(String.valueOf(sitename.getText()))).setSite_isnotify("0");
+            sites.get(getIndexByName(String.valueOf(sitename.getText()))).setSite_isnotify("0");
+            MainActivity.mSites.get(getIndexByName(String.valueOf(sitename.getText()))).setSite_isnotify("0");
         }
 
         @Override
@@ -172,16 +170,13 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
 
         @Override
         public boolean onLongClick(View view) {
-            Log.d("HardSkins", "Long click in siteHolder");
-            switchNotify = itemView.findViewById(R.id.notificationSwitcher);
-            Toast.makeText(context, "Уведомления long tap", Toast.LENGTH_SHORT).show();
             if (switchNotify.isChecked()){
                 Toast.makeText(context, "Уведомления уже включены", Toast.LENGTH_SHORT).show();
                 return true;
             } else {
                 Log.d("HardSkins", "Long tap on linear layout!");
                 switchNotify.setChecked(true);
-                Site tempSite = sites.get(getIndexByname(String.valueOf(sitename.getText())));
+                Site tempSite = sites.get(getIndexByName(String.valueOf(sitename.getText())));
                 switchOn(Long.parseLong(tempSite.getSite_free_bonus_hour_time()));
                 Toast.makeText(context, "Уведомления включено", Toast.LENGTH_SHORT).show();
                 return true;
@@ -205,7 +200,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
 
 
 
-    private int getIndexByname(String pName)
+    private int getIndexByName(String pName)
     {
         for(Site _item : sites)
         {
@@ -243,13 +238,25 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
         onBind = true;
 
         if (sites.get(position).getSite_isnotify() ) {
+            appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
             siteHolder.switchNotify.setChecked(true);
-            int tempPosition = getIndexByname(String.valueOf(siteHolder.sitename.getText()));
+            int tempPosition = getIndexByName(String.valueOf(siteHolder.sitename.getText()));
             Site tempSite = sites.get(tempPosition);
             Log.d("HardSkins", "Position: " + position);
-            appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+            long timeLastClose = appSharedPrefs.getLong("LastCloseAppTime", 0);
+            long timeLastOpen = appSharedPrefs.getLong("LastOpenTime", 0);
+            long timeToNotify = sites.get(tempPosition).getSite_time_to_notify();
+            long timeRemaning = timeLastOpen - timeLastClose;
+            long setTime;
+            if ( timeToNotify - timeRemaning >= 0){
+                setTime = timeToNotify - timeRemaning;
+            } else {
+                setTime = 60000;
 
+            }
 
+            sites.get(tempPosition).setSite_time_to_notify(setTime);
+            MainActivity.mSites.get(tempPosition).setSite_time_to_notify(setTime);
             siteHolder.textDate.setVisibility(View.VISIBLE);
 
 
