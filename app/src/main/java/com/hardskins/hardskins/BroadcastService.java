@@ -21,6 +21,7 @@ public class  BroadcastService extends Service {
 
 
 
+
     @Override
     public void onDestroy() {
         Log.d(TAG, "Timer cancelled");
@@ -115,11 +116,11 @@ public class  BroadcastService extends Service {
             nameTimer = name;
         }
 
-        public void stopTimer(){
+        private void stopTimer(){
             timer.cancel();
         }
 
-        public void startTimer(){
+        void startTimer(){
             timer = new CountDownTimer(time ,1000) {
                 @Override
                 public void onTick(long l) {
@@ -140,7 +141,7 @@ public class  BroadcastService extends Service {
         }
 
 
-        public String getNameTimer() {
+        String getNameTimer() {
             return nameTimer;
         }
 

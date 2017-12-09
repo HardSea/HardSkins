@@ -1,5 +1,10 @@
 package com.hardskins.hardskins;
 
+
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
+import android.app.TaskStackBuilder;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -8,9 +13,11 @@ import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -42,6 +49,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import static java.lang.Thread.MAX_PRIORITY;
 import static java.lang.Thread.sleep;
 
 public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, TimerStarter{
@@ -55,9 +63,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SharedPreferences appSharedPrefs;
     private SharedPreferences.Editor prefsEditor;
     private String TAG = "HardSkins";
-    private RecyclerView recyclerView;
     public final static String COUNTDOWN_BR = "hardskins.countdown_br";
-
 
 
 
@@ -138,8 +144,41 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d("BroadcastService", "Stoped service");
     }
 
+    @Override
+    public  void showNotification(int position) {
+        String nameSite = mSites.get(position).getSite_name();
 
+        Intent resultIntent = new Intent(this, MainActivity.class);
+        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
+        stackBuilder.addParentStack(MainActivity.class);
+        stackBuilder.addNextIntent(resultIntent);
+        PendingIntent resultPendingIntent =
+                stackBuilder.getPendingIntent(
+                        0,
+                        PendingIntent.FLAG_UPDATE_CURRENT
+                );
+        PendingIntent pIntent = PendingIntent.getActivity(this, 0, resultIntent, 0);
 
+        NotificationCompat.Builder mBuilder =
+                new NotificationCompat.Builder(context, ALARM_SERVICE)
+                        .setSmallIcon(R.mipmap.ic_launcher)
+                        .setContentTitle("Ваш бонус готов!")
+                        .setContentText(nameSite)
+                        .setPriority(MAX_PRIORITY)
+                        .addAction(R.mipmap.ic_launcher, "Открыть сайт", pIntent)
+                        .addAction(R.mipmap.ic_launcher, "Выключить уведомления", pIntent)
+                        .setLights(10,10,10)
+                        .setDefaults(Notification.DEFAULT_SOUND| Notification.DEFAULT_LIGHTS);
+        mBuilder.setContentIntent(resultPendingIntent);
+        NotificationManager mNotificationManager =
+                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        assert mNotificationManager != null;
+        mNotificationManager.notify(position, mBuilder.build());
+
+        Vibrator v = (Vibrator) this.context.getSystemService(Context.VIBRATOR_SERVICE);
+        assert v != null;
+        v.vibrate(750);
+    }
 
     public boolean isOnline() {
         ConnectivityManager cm =
@@ -150,13 +189,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     } // condition on online
 
 
-    protected static Date addMinutesToDate(int minutes, Date beforeTime){
-        final long ONE_MINUTE_IN_MILLIS = 60000;//millisecs
-
-        long curTimeInMs = beforeTime.getTime();
-        Date afterAddingMins = new Date(curTimeInMs + (minutes * ONE_MINUTE_IN_MILLIS));
-        return afterAddingMins;
-    }
 
     private void firstrun() {
         SharedPreferences wmbPreference = PreferenceManager.getDefaultSharedPreferences(this);
@@ -169,7 +201,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_2), "0"));
             Log.d(TAG, "Site add!");
 
-            getOnlineElements();
+            getOnlineElements(context);
             // Code to run once
             SharedPreferences.Editor editor = wmbPreference.edit();
             if (isOnline()){
@@ -214,53 +246,67 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         navigationView.setNavigationItemSelectedListener(this);
     }
 
-    protected static void getOnlineElements(){
-        final List <Site> tempmSites = new ArrayList<>();
-        final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+    public static void getOnlineElements(final Context context){
+        SharedPreferences appSharedpreff = PreferenceManager.getDefaultSharedPreferences(context);
+        boolean run = appSharedpreff.getBoolean("GetOnlineElement", true);
+        SharedPreferences.Editor editor = appSharedpreff.edit();
 
-        DatabaseReference myRef = database.child("site");
-        myRef.addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(DataSnapshot dataSnapshot) {
-                mSites.clear();
-                mSites = tempmSites;
-                SiteAdapter.cleanList();
-                SiteAdapter.setSites(mSites);
 
-                for(DataSnapshot tempSnapshot : dataSnapshot.getChildren()){
-                    Site tempSite = tempSnapshot.getValue(Site.class);
-                    tempmSites.add(tempSite);
-                    // String value = dataSnapshot.child("hardskins-8912e").child("Site").child("0").child("site_address").getValue(String.class);
-                    assert tempSite != null;
-                    Log.d("HardSkins","Value is:" + tempSite.getSite_name());
+        if (run){
+            final List <Site> tempmSites = new ArrayList<>();
+            final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
+            DatabaseReference myRef = database.child("site");
+
+            myRef.addValueEventListener(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    mSites.clear();
+                    mSites = tempmSites;
+                    SiteAdapter.cleanList();
+                    SiteAdapter.setSites(mSites);
+
+                    for(DataSnapshot tempSnapshot : dataSnapshot.getChildren()){
+                        Site tempSite = tempSnapshot.getValue(Site.class);
+                        tempmSites.add(tempSite);
+                        // String value = dataSnapshot.child("hardskins-8912e").child("Site").child("0").child("site_address").getValue(String.class);
+                        assert tempSite != null;
+                        Log.d("HardSkins","Value is:" + tempSite.getSite_name());
+
+                    }
+                    Toast.makeText(context, "Загрузка данных с сервера...", Toast.LENGTH_SHORT).show();
+                    Log.d("HardSkins", String.valueOf(mSites.size()));
 
                 }
 
-                Log.d("HardSkins", String.valueOf(mSites.size()));
 
-            }
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
 
-
-            @Override
-            public void onCancelled(DatabaseError databaseError) {
-
-                Toast.makeText(Global.getAppContext(), "Неудалось обновить базу данных.\n Попробуйте позже", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(Global.getAppContext(), "Неудалось обновить базу данных.\n Попробуйте позже", Toast.LENGTH_SHORT).show();
 
 
-                Log.d("HardSkins", "Failed to read value", databaseError.toException());
-            }
+                    Log.d("HardSkins", "Failed to read value", databaseError.toException());
+                }
 
 
-        });
+            });
 
 
 
+            editor.putBoolean("GetOnlineElement", false);
 
+
+
+        }
+        Date dateDownload = new Date();
+        long timeDownload = dateDownload.getTime();
+        editor.putLong("LastDownloadFromServer", timeDownload);
+        editor.apply();
 
     } //Download element from Firebase
 
     private void createRecyclerView(){
-        recyclerView = findViewById(R.id.recycler_view);
+        RecyclerView recyclerView = findViewById(R.id.recycler_view);
         LinearLayoutManager linearManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearManager);
 
@@ -373,6 +419,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void startSettings(){
         Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
+
         startActivity(intent);
     }
 

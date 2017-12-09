@@ -20,19 +20,13 @@ import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
-import java.util.Date;
 import java.util.List;
-import java.util.Timer;
 
 public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
 
     private static List<Site> sites;
     private Context context;
-    private static Date now;
-    private static Date then;
-    private Timer mTimer;
     private SharedPreferences appSharedPrefs;
-    private SharedPreferences.Editor prefsEditor;
     private TimerStarter firstStarter;
     private boolean onBind;
 
@@ -49,6 +43,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
         private LinearLayout linearCard;
         private CountDownTimer t;
         private TimerStarter secondStarter;
+        private String locale = "%02d:%02d:%02d";
 
 
 
@@ -97,7 +92,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
 
 
 
-        void startTimer( long time) {
+        void startTimer(long time, final int position) {
             long tick = 1000;
 
             t = new CountDownTimer(time, tick) {
@@ -118,15 +113,15 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
 
                     long elapsedSeconds = millisUntilFinished / secondsInMilli;
 
-                    String yy = String.format("%02d:%02d:%02d", elapsedHours, elapsedMinutes, elapsedSeconds);
+                    String yy = String.format(locale, elapsedHours, elapsedMinutes, elapsedSeconds);
                     textDate.setText(yy);
 
                 }
 
                 public void onFinish() {
-                    textDate.setText("00:00:00");
+                    textDate.setText(R.string.zerozerozerozerozerozero);
                     Toast.makeText(context, "Finish", Toast.LENGTH_SHORT).show();
-
+                    secondStarter.showNotification(position);
                     cancel();
                 }
             }.start();
@@ -142,15 +137,15 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
             Toast.makeText(context,"Switcher ON", Toast.LENGTH_SHORT).show();
             textDate.setVisibility(View.VISIBLE);
            // notifyItemMoved(getAdapterPosition(), 0); //working not correct
-            startTimer(time);
+            startTimer(time, getIndexByName(String.valueOf(sitename.getText())));
         }
 
         private void switchOff(){
             sites.get(getIndexByName(String.valueOf(sitename.getText()))).setSite_time_to_notify(0);
             MainActivity.mSites.get(getIndexByName(String.valueOf(sitename.getText()))).setSite_time_to_notify(0);
             appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-            prefsEditor = appSharedPrefs.edit();
-            prefsEditor.remove("StartTimerTime" + sitename.getText()).apply();
+            SharedPreferences.Editor prefsEditor = appSharedPrefs.edit();
+            prefsEditor.remove(context.getString(R.string.starttimertimer) + sitename.getText()).apply();
             Log.d("HardSkins", "Switch off clicked!");
        //     appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
             Toast.makeText(context,"Switcher OFF", Toast.LENGTH_SHORT).show();
@@ -183,7 +178,6 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
             }
 
         }
-
 
 
 
@@ -251,7 +245,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
             if ( timeToNotify - timeRemaning >= 0){
                 setTime = timeToNotify - timeRemaning;
             } else {
-                setTime = 60000;
+                setTime = 5000;
 
             }
 
@@ -260,7 +254,8 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
             siteHolder.textDate.setVisibility(View.VISIBLE);
 
 
-            siteHolder.startTimer(tempSite.getSite_time_to_notify());
+            siteHolder.startTimer(tempSite.getSite_time_to_notify(),
+                    getIndexByName(String.valueOf(siteHolder.sitename.getText())));
 
             siteHolder.secondStarter.continueServicetimer(tempPosition);
 
@@ -288,7 +283,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder>{
     }
 
     SiteAdapter(List<Site> sites, Context context, TimerStarter timerStarter) {
-        this.sites = sites;
+        SiteAdapter.sites = sites;
         this.context = context;
         firstStarter = timerStarter;
 

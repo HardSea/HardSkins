@@ -86,4 +86,6 @@
 
     <string name="pref_title_vibrate">Vibrate</string>
     <string name="title_activity_settings">Settings</string>
+    <string name="starttimertimer">StartTimerTime</string>
+    <string name="zerozerozerozerozerozero">00:00:00</string>
 </resources>
