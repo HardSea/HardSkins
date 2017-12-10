@@ -3,6 +3,8 @@ package com.hardskins.hardskins;
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
@@ -17,6 +19,7 @@ import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
 import android.preference.RingtonePreference;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.text.TextUtils;
 import android.view.MenuItem;
 import android.widget.Toast;
@@ -27,7 +30,7 @@ import java.util.List;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
 
-     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
+    private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
         @Override
         public boolean onPreferenceChange(Preference preference, Object value) {
             String stringValue = value.toString();
@@ -177,31 +180,75 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     @Override
     public void onHeaderClick(Header header, int position) {
         super.onHeaderClick(header, position);
-        if(header.id == R.id.download_data_from_server){
+        if (header.id == R.id.download_data_from_server) {
 
+//            AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
+//            builder.setTitle("Важное сообщение!")
+//                    .setMessage("Покормите кота!")
+//                    .setCancelable(false)
+//                    .setNegativeButton("ОК, иду на кухню",
+//                            new DialogInterface.OnClickListener() {
+//                                public void onClick(DialogInterface dialog, int id) {
+//                                    dialog.cancel();
+//                                }
+//                            });
+//            AlertDialog alert = builder.create();
+//            alert.show();
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
             SharedPreferences.Editor editor = prefs.edit();
-
-            Date date = new Date();
-            long time = date.getTime();
             long lastDownload = prefs.getLong("LastDownloadFromServer", 0);
-            if (time - 77760000 > lastDownload){
-                editor.putBoolean("GetOnlineElement", true);
-                MainActivity.getOnlineElements(getApplicationContext());
-            } else {
-                Toast.makeText(getApplicationContext(), "Обновлять данные с сервера \n    можно только раз в сутки", Toast.LENGTH_SHORT).show();
-                Date localdate = new Date(lastDownload);
-                @SuppressLint("SimpleDateFormat") java.text.DateFormat df = new SimpleDateFormat("EEEE hh:mm");
+            Date lastDateDownload = new Date(lastDownload);
+            @SuppressLint("SimpleDateFormat") java.text.DateFormat df = new SimpleDateFormat("EEEE HH:mm ");
 
-                Toast.makeText(getApplicationContext(), "Псоледняя дата загрузки:\n " + "       " + df.format(localdate), Toast.LENGTH_SHORT).show();
 
-            }
+            AlertDialog.Builder ad;
+            ad = new AlertDialog.Builder(SettingsActivity.this);
+            ad.setTitle("Обновить данные с сервера?");  // заголовок
+            ad.setMessage("Внимание! После обновления все работающие таймеры сбросятся! \n\nОбновляться можно только раз в сутки. \nДата последнего обновления: " + df.format(lastDateDownload)); // сообщение
+
+            ad.setPositiveButton("Обновить", new OnClickListener() {
+                public void onClick(DialogInterface dialog, int arg1) {
+                    @SuppressLint("SimpleDateFormat") java.text.DateFormat df = new SimpleDateFormat("EEEE hh:mm a");
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
+                    SharedPreferences.Editor editor = prefs.edit();
+                    Date date = new Date();
+                    long time = date.getTime();
+                    long lastDownload = prefs.getLong("LastDownloadFromServer", 0);
+                    // TODO поменять время на раз в сутки(77760000)
+                    if (time - 3000 > lastDownload) {
+                        editor.putBoolean("GetOnlineElement", true);
+                        MainActivity.getOnlineElements(getApplicationContext());
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Обновлять данные с сервера \n    можно только раз в сутки", Toast.LENGTH_SHORT).show();
+                        Date localdate = new Date(lastDownload);
+
+                        Toast.makeText(getApplicationContext(), "Псоледняя дата загрузки:\n " + "       " + df.format(localdate), Toast.LENGTH_SHORT).show();
+
+                    }
+                    editor.apply();
+                    MainActivity.cnt_timer = 0;
+                }
+            });
+
+            ad.setNegativeButton("Отмена", new OnClickListener() {
+                public void onClick(DialogInterface dialog, int arg1) {
+
+                }
+            });
+
+            ad.setCancelable(true);
+            ad.setOnCancelListener(new DialogInterface.OnCancelListener() {
+                public void onCancel(DialogInterface dialog) {
+
+                }
+            });
+            ad.show();
+
+
 
 
 
             editor.apply();
-
-
 
 
         }

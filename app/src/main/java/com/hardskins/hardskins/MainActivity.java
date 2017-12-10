@@ -1,6 +1,7 @@
 package com.hardskins.hardskins;
 
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -64,7 +65,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SharedPreferences.Editor prefsEditor;
     private String TAG = "HardSkins";
     public final static String COUNTDOWN_BR = "hardskins.countdown_br";
-
+    protected static int cnt_timer = 0;
+    public static Activity mainActivity;
 
 
 
@@ -72,7 +74,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
+        mainActivity = this;
 
 
 
@@ -118,8 +120,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     @Override
     public void continueServicetimer(int position) {
+
+        appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        String nameSite = mSites.get(position).getSite_name();
+        long temptime = appSharedPrefs.getLong(nameSite + "time to notify", 0);
         startService(new Intent(this, BroadcastService.class)
-                .putExtra("time", mSites.get(position).getSite_time_to_notify())
+                .putExtra("time", temptime)
                 .putExtra("nameSite", mSites.get(position).getSite_name())
                 .setAction("SERVICE_CONTINUE"));
 
@@ -222,7 +228,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
         Gson gson = new Gson();
         String json = appSharedPrefs.getString(TAG_PREFS, "");
-
+        cnt_timer = appSharedPrefs.getInt("count timer", 0);
         Type type = new TypeToken<ArrayList<Site>>(){}.getType();
       //  mSites.clear();
         mSites = gson.fromJson(json, type);
@@ -294,7 +300,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
             editor.putBoolean("GetOnlineElement", false);
-
 
 
         }
@@ -371,8 +376,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startSettings();
                 return true;
             case R.id.refresh_recyclerview:
-                siteAdapter.notifyDataSetChanged();
-
+                if (cnt_timer == 0){
+                    siteAdapter.notifyDataSetChanged();
+                }
 
                 return true;
             default:
@@ -470,8 +476,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         if (intent.getExtras() != null) {
             String nameTimer = intent.getStringExtra("name");
             long time = intent.getLongExtra("time", 0);
-            mSites.get(getIndexByname(nameTimer))
-                  .setSite_time_to_notify(time);
+
+            appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+            prefsEditor = appSharedPrefs.edit();
+            prefsEditor.putLong(nameTimer + "time to notify", time);
+            prefsEditor.apply();
+
 
         }
     }
@@ -506,7 +516,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
         prefsEditor = appSharedPrefs.edit();
 
-
+        prefsEditor.putInt("count timer", cnt_timer);
         String json = gson.toJson(mSites);
         prefsEditor.putString(TAG_PREFS, json);
         prefsEditor.apply();
