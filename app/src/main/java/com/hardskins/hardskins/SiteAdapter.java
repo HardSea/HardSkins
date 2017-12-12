@@ -80,6 +80,16 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
                 }
             });
 
+            textDate.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+
+                }
+            });
+
+
+
+
 
         }
 
