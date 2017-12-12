@@ -1,5 +1,6 @@
 package com.hardskins.hardskins;
 
+import android.app.TimePickerDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -12,14 +13,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.CompoundButton;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
-
+import android.widget.*;
 import com.squareup.picasso.Picasso;
 
+import java.util.Calendar;
 import java.util.List;
 
 public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
@@ -43,6 +40,8 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
         private CountDownTimer t;
         private TimerStarter secondStarter;
         private String locale = "%02d:%02d:%02d";
+        private boolean isContinue = false;
+
 
 
         SiteHolder(View itemView, TimerStarter timerStarter) {
@@ -66,13 +65,17 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
                         int tempPosition = getIndexByName(String.valueOf(sitename.getText()));
                         Site tempSite = sites.get(tempPosition);
                         if (b) {
-                            switchOn(Long.parseLong(tempSite.getSite_free_bonus_hour_time()));
-                            secondStarter.startServiceTimer(tempPosition);
-
+                            if (!isContinue){
+                                switchOn(Long.parseLong(tempSite.getSite_free_bonus_hour_time()));
+                                secondStarter.startServiceTimer(tempPosition, Long.parseLong(tempSite.getSite_free_bonus_hour_time()));
+                            }
                         } else {
-                            switchOff();
-                            t.cancel();
-                            secondStarter.stopServiceTimer(tempPosition);
+                                isContinue = false;
+                                switchOff();
+                                t.cancel();
+                                secondStarter.stopServiceTimer(tempPosition);
+
+
 
                         }
                     }
@@ -83,7 +86,29 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
             textDate.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View view) {
+                    appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+                    Calendar mcurrentTime1 = Calendar.getInstance();
+                    int hour = mcurrentTime1.get(Calendar.HOUR_OF_DAY);
+                    int minute = (int) (appSharedPrefs.getLong(sitename.getText() + "time to notify", 0) / 3600000);
+                    TimePickerDialog mTimePicker;
+                    mTimePicker = new TimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
+                        @Override
+                        public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
+                            isContinue = false;
+                            int tempPosition = getIndexByName(String.valueOf(sitename.getText()));
+                            Toast.makeText(context,selectedHour + ":" + selectedMinute, Toast.LENGTH_SHORT).show();
+                            switchOff();
+                            switchNotify.setChecked(false);
+                            isContinue = true;
+                            long selectedTime = (selectedHour * 3600000) + (selectedMinute * 60000);
+                            switchOn(selectedTime);
+                            secondStarter.startServiceTimer(tempPosition, selectedTime);
+                            switchNotify.setChecked(true);
 
+                        }
+                    }, hour, minute, true);//Yes 24 hour time
+                    mTimePicker.setTitle("Select Time");
+                    mTimePicker.show();
                 }
             });
 
@@ -92,6 +117,9 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
 
 
         }
+
+
+
 
 
         void startTimer(long time, final int position) {
@@ -165,6 +193,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
             MainActivity.mSites.get(getIndexByName(String.valueOf(sitename.getText()))).setSite_isnotify("0");
             prefsEditor.apply();
             MainActivity.cnt_timer--;
+
         }
 
         @Override

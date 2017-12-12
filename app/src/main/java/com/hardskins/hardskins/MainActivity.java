@@ -104,10 +104,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void startServiceTimer(int position){
+    public void startServiceTimer(int position, long time){
 
         startService(new Intent(this, BroadcastService.class)
-                .putExtra("time", mSites.get(position).getSite_free_bonus_hour_time())
+                .putExtra("time", time)
                 .putExtra("nameSite", mSites.get(position).getSite_name())
                 .setAction("SERVICE_START"));
 

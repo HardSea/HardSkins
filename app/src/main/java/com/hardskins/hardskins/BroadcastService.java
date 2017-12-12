@@ -36,7 +36,7 @@ public class  BroadcastService extends Service {
 
         if ("SERVICE_START".equals(intent.getAction())){
 
-            int time = Integer.parseInt((intent.getStringExtra("time")));
+            long time = (intent.getLongExtra("time",0));
             String currentTimer = intent.getStringExtra("nameSite");
             position = getIndexBynameSite(currentTimer);
 
