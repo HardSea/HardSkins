@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.*;
+
 import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
@@ -29,7 +30,6 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
     private boolean onBind;
 
 
-
     class SiteHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         private CardView cardView;
         private TextView sitename;
@@ -41,7 +41,6 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
         private TimerStarter secondStarter;
         private String locale = "%02d:%02d:%02d";
         private boolean isContinue = false;
-
 
 
         SiteHolder(View itemView, TimerStarter timerStarter) {
@@ -57,7 +56,6 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
             secondStarter = timerStarter;
 
 
-
             switchNotify.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                 @Override
                 public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -65,16 +63,15 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
                         int tempPosition = getIndexByName(String.valueOf(sitename.getText()));
                         Site tempSite = sites.get(tempPosition);
                         if (b) {
-                            if (!isContinue){
+                            if (!isContinue) {
                                 switchOn(Long.parseLong(tempSite.getSite_free_bonus_hour_time()));
                                 secondStarter.startServiceTimer(tempPosition, Long.parseLong(tempSite.getSite_free_bonus_hour_time()));
                             }
                         } else {
-                                isContinue = false;
-                                switchOff();
-                                t.cancel();
-                                secondStarter.stopServiceTimer(tempPosition);
-
+                            isContinue = false;
+                            switchOff();
+                            t.cancel();
+                            secondStarter.stopServiceTimer(tempPosition);
 
 
                         }
@@ -96,7 +93,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
                         public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                             isContinue = false;
                             int tempPosition = getIndexByName(String.valueOf(sitename.getText()));
-                            Toast.makeText(context,selectedHour + ":" + selectedMinute, Toast.LENGTH_SHORT).show();
+                            Toast.makeText(context, selectedHour + ":" + selectedMinute, Toast.LENGTH_SHORT).show();
                             switchOff();
                             switchNotify.setChecked(false);
                             isContinue = true;
@@ -113,13 +110,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
             });
 
 
-
-
-
         }
-
-
-
 
 
         void startTimer(long time, final int position) {
@@ -235,7 +226,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
 
     private int getIndexByName(String pName) {
         for (Site _item : sites) {
-            if (_item.getName().equals(pName))
+            if (_item.getSite_name().equals(pName))
                 return sites.indexOf(_item);
         }
         return -1;
@@ -259,26 +250,27 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
         int t = sites.size();
         for (int i = 0; i < t; i++) {
             siteHolder.sitename.setText(sites.get(position).getSite_name());
-
             Picasso.with(context)
                     .load(sites.get(position).getSite_photo_url())
                     .into(siteHolder.sitePhoto);
-
             i++;
         }
-
         onBind = true;
-
+        appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefsEditor = appSharedPrefs.edit();
+        if (appSharedPrefs.getBoolean("new elements", false)) {
+            for (int i = 0; i < sites.size(); i++) {
+                sites.get(i).setSite_isnotify("0");
+                MainActivity.mSites.get(i).setSite_isnotify("0");
+            }
+            prefsEditor.putBoolean("new elements", false);
+            prefsEditor.apply();
+        }
         if (sites.get(position).getSite_isnotify()) {
-            appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-            prefsEditor = appSharedPrefs.edit();
             siteHolder.switchNotify.setChecked(true);
             int tempPosition = getIndexByName(String.valueOf(siteHolder.sitename.getText()));
-            //    Site tempSite = sites.get(tempPosition);
-            Log.d("HardSkins", "Position: " + position);
             long timeLastClose = appSharedPrefs.getLong("LastCloseAppTime", 0);
             long timeLastOpen = appSharedPrefs.getLong("LastOpenTime", 0);
-            //  long timeToNotify = sites.get(tempPosition).getSite_time_to_notify();
             long timeToNotify = appSharedPrefs.getLong(MainActivity.mSites.get(tempPosition).getSite_name() + "time to notify", 0);
             long timeRemaning = timeLastOpen - timeLastClose;
             long setTime;
@@ -286,31 +278,14 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
                 setTime = timeToNotify - timeRemaning;
             } else {
                 setTime = 500;
-
             }
-
             prefsEditor.putLong(MainActivity.mSites.get(tempPosition).getSite_name() + "time to notify", setTime);
             prefsEditor.apply();
-
-            //   sites.get(tempPosition).setSite_time_to_notify(setTime);
-            //   MainActivity.mSites.get(tempPosition).setSite_time_to_notify(setTime);
-
-
             siteHolder.textDate.setVisibility(View.VISIBLE);
-
-
-            siteHolder.startTimer(appSharedPrefs.getLong(MainActivity.mSites.get(tempPosition).getSite_name() + "time to notify", 0),
-                    getIndexByName(String.valueOf(siteHolder.sitename.getText())));
-
+            siteHolder.startTimer(appSharedPrefs.getLong(MainActivity.mSites.get(tempPosition).getSite_name() + "time to notify", 0), getIndexByName(String.valueOf(siteHolder.sitename.getText())));
             siteHolder.secondStarter.continueServicetimer(tempPosition);
-
-
         }
-
-
         onBind = false;
-
-
     }
 
 

@@ -255,13 +255,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public static void getOnlineElements(final Context context){
         SharedPreferences appSharedpreff = PreferenceManager.getDefaultSharedPreferences(context);
         boolean run = appSharedpreff.getBoolean("GetOnlineElement", true);
-        SharedPreferences.Editor editor = appSharedpreff.edit();
+        final SharedPreferences.Editor editor = appSharedpreff.edit();
 
 
         if (run){
             final List <Site> tempmSites = new ArrayList<>();
             final DatabaseReference database = FirebaseDatabase.getInstance().getReference();
-            DatabaseReference myRef = database.child("site");
+            final DatabaseReference myRef = database.child("site");
 
             myRef.addValueEventListener(new ValueEventListener() {
                 @Override
@@ -270,6 +270,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     mSites = tempmSites;
                     SiteAdapter.cleanList();
                     SiteAdapter.setSites(mSites);
+                    editor.putBoolean("new elements", true);
+                    editor.apply();
 
                     for(DataSnapshot tempSnapshot : dataSnapshot.getChildren()){
                         Site tempSite = tempSnapshot.getValue(Site.class);
@@ -281,28 +283,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                     }
                     Toast.makeText(context, "Загрузка данных с сервера...", Toast.LENGTH_SHORT).show();
                     Log.d("HardSkins", String.valueOf(mSites.size()));
-
+                    myRef.removeEventListener(this);
                 }
 
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-
                     Toast.makeText(Global.getAppContext(), "Неудалось обновить базу данных.\n Попробуйте позже", Toast.LENGTH_SHORT).show();
-
-
                     Log.d("HardSkins", "Failed to read value", databaseError.toException());
                 }
-
-
             });
-
-
-
             editor.putBoolean("GetOnlineElement", false);
-
-
         }
+
         Date dateDownload = new Date();
         long timeDownload = dateDownload.getTime();
         editor.putLong("LastDownloadFromServer", timeDownload);
@@ -427,6 +420,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
 
         startActivity(intent);
+        finish();
     }
 
     public void startHelp(){

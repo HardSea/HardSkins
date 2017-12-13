@@ -205,7 +205,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             ad = new AlertDialog.Builder(SettingsActivity.this);
             ad.setTitle("Обновить данные с сервера?");  // заголовок
             ad.setMessage("Внимание! После обновления все работающие таймеры сбросятся! \n\nОбновляться можно только раз в сутки. \nДата последнего обновления: " + df.format(lastDateDownload)); // сообщение
-
             ad.setPositiveButton("Обновить", new OnClickListener() {
                 public void onClick(DialogInterface dialog, int arg1) {
                     @SuppressLint("SimpleDateFormat") java.text.DateFormat df = new SimpleDateFormat("EEEE hh:mm a");
@@ -227,6 +226,15 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     }
                     editor.apply();
                     MainActivity.cnt_timer = 0;
+
+                    Intent i = getBaseContext().getPackageManager().
+                            getLaunchIntentForPackage(getBaseContext().getPackageName());
+                    assert i != null;
+                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    startActivity(i);
+                    finish();
+
                 }
             });
 
@@ -252,5 +260,14 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
 
         }
+    }
+
+    @Override
+    public void onBackPressed() {
+        super.onBackPressed();
+        Intent i = getBaseContext().getPackageManager().
+                getLaunchIntentForPackage(getBaseContext().getPackageName());
+        startActivity(i);
+        finish();
     }
 }
