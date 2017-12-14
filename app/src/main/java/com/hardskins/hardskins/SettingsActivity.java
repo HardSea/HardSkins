@@ -2,6 +2,7 @@ package com.hardskins.hardskins;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnClickListener;
@@ -13,6 +14,7 @@ import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
+import android.os.Handler;
 import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
@@ -29,6 +31,7 @@ import java.util.Date;
 import java.util.List;
 
 public class SettingsActivity extends AppCompatPreferenceActivity {
+    private boolean shouldAllowBack = true;
 
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
         @Override
@@ -204,9 +207,10 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             AlertDialog.Builder ad;
             ad = new AlertDialog.Builder(SettingsActivity.this);
             ad.setTitle("Обновить данные с сервера?");  // заголовок
-            ad.setMessage("Внимание! После обновления все работающие таймеры сбросятся! \n\nОбновляться можно только раз в сутки. \nДата последнего обновления: " + df.format(lastDateDownload)); // сообщение
+            ad.setMessage("Обновляться можно только раз в сутки. \nДата последнего обновления: " + df.format(lastDateDownload)); // сообщение
             ad.setPositiveButton("Обновить", new OnClickListener() {
                 public void onClick(DialogInterface dialog, int arg1) {
+                    shouldAllowBack = false;
                     @SuppressLint("SimpleDateFormat") java.text.DateFormat df = new SimpleDateFormat("EEEE hh:mm a");
                     SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
                     SharedPreferences.Editor editor = prefs.edit();
@@ -225,15 +229,30 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
                     }
                     editor.apply();
-                    MainActivity.cnt_timer = 0;
 
-                    Intent i = getBaseContext().getPackageManager().
-                            getLaunchIntentForPackage(getBaseContext().getPackageName());
+                   Intent i = getBaseContext().getPackageManager().
+                           getLaunchIntentForPackage(getBaseContext().getPackageName());
                     assert i != null;
                     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                    // TODO: продолжение таймеров после обновления через настройки
+                    shouldAllowBack = true;
+
+
+                    showWorkingDialog();
+
+                    new Handler().postDelayed(new Runnable() {
+
+                        @Override
+                        public void run() {
+                            removeWorkingDialog();
+                        }
+
+                    }, 3000);
+
                     startActivity(i);
                     finish();
+
 
                 }
             });
@@ -260,14 +279,37 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 
 
         }
+
+
     }
+
+    private ProgressDialog working_dialog;
+
+    private void showWorkingDialog() {
+        working_dialog = ProgressDialog.show(SettingsActivity.this, "","Working please wait...", true);
+    }
+
+    private void removeWorkingDialog() {
+        if (working_dialog != null) {
+
+            working_dialog = null;
+
+
+        }
+    }
+
 
     @Override
     public void onBackPressed() {
-        super.onBackPressed();
-        Intent i = getBaseContext().getPackageManager().
-                getLaunchIntentForPackage(getBaseContext().getPackageName());
-        startActivity(i);
-        finish();
+        if (!shouldAllowBack) {
+            Toast.makeText(this, "Дождитесь окончания загрузки", Toast.LENGTH_SHORT).show();
+        } else {
+            super.onBackPressed();
+            Intent i = getBaseContext().getPackageManager().
+                    getLaunchIntentForPackage(getBaseContext().getPackageName());
+            startActivity(i);
+            finish();
+        }
+
     }
 }

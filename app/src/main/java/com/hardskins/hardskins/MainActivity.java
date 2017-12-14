@@ -67,6 +67,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public final static String COUNTDOWN_BR = "hardskins.countdown_br";
     protected static int cnt_timer = 0;
     public static Activity mainActivity;
+    public  boolean isFirstRun;
 
 
 
@@ -75,14 +76,12 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         mainActivity = this;
-
-
-
         context = this;
+        appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+        isFirstRun = appSharedPrefs.getBoolean("FIRSTRUN", true);
         firstrun(); // check on first run and initializedata
 
         createNavigationMenu();
-
 
 
         createRecyclerView();         //creating recyclerview and refreshing new changes in recycler view
@@ -197,19 +196,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
 
     private void firstrun() {
-        SharedPreferences wmbPreference = PreferenceManager.getDefaultSharedPreferences(this);
-        boolean isFirstRun = wmbPreference.getBoolean("FIRSTRUN", true);
         if (isFirstRun){
-            mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_0), "0"));
+            appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+            mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_0), "0" ));
             Log.d(TAG, "Site add!");
-            mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_1), "0"));
+            mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_1), "0" ));
             Log.d(TAG, "Site add!");
-            mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_2), "0"));
+            mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_2), "0" ));
             Log.d(TAG, "Site add!");
 
             getOnlineElements(context);
-            // Code to run once
-            SharedPreferences.Editor editor = wmbPreference.edit();
+
+            SharedPreferences.Editor editor = appSharedPrefs.edit();
             if (isOnline()){
                 editor.putBoolean("FIRSTRUN", false);
                 Log.d(TAG, "First time has been closed!");
@@ -363,13 +361,13 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
+    public boolean onOptionsItemSelected(MenuItem item) { //    refresh item
         switch (item.getItemId()){
             case R.id.action_setting_button:
                 startSettings();
                 return true;
             case R.id.refresh_recyclerview:
-                if (cnt_timer == 0){
+                if (cnt_timer == 0 || isFirstRun){
                     siteAdapter.notifyDataSetChanged();
                 }
 
@@ -471,10 +469,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             String nameTimer = intent.getStringExtra("name");
             long time = intent.getLongExtra("time", 0);
 
-            appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-            prefsEditor = appSharedPrefs.edit();
-            prefsEditor.putLong(nameTimer + "time to notify", time);
-            prefsEditor.apply();
+           // appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+           // prefsEditor = appSharedPrefs.edit();
+           // prefsEditor.putLong(nameTimer + "time to notify", time);
+           // prefsEditor.apply();
 
 
         }

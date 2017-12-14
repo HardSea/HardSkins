@@ -30,6 +30,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
     private boolean onBind;
 
 
+
     class SiteHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         private CardView cardView;
         private TextView sitename;
@@ -113,10 +114,12 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
         }
 
 
-        void startTimer(long time, final int position) {
+        void startTimer(final long time, final int position) {
             long tick = 1000;
+            final String nameTimer = sites.get(position).getSite_name();
 
             t = new CountDownTimer(time, tick) {
+
 
                 public void onTick(long millisUntilFinished) {
                     //     long remainedSecs = millisUntilFinished / 1000;
@@ -136,6 +139,12 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
 
                     String yy = String.format(locale, elapsedHours, elapsedMinutes, elapsedSeconds);
                     textDate.setText(yy);
+
+                    appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+                     prefsEditor = appSharedPrefs.edit();
+                     prefsEditor.putLong(nameTimer + "time to notify", time);
+                     prefsEditor.apply();
+
 
                 }
 
@@ -159,7 +168,6 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
             textDate.setVisibility(View.VISIBLE);
             // notifyItemMoved(getAdapterPosition(), 0); //working not correct
             startTimer(time, getIndexByName(String.valueOf(sitename.getText())));
-            MainActivity.cnt_timer++;
         }
 
         private void switchOff() {
@@ -183,7 +191,6 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
             sites.get(getIndexByName(String.valueOf(sitename.getText()))).setSite_isnotify("0");
             MainActivity.mSites.get(getIndexByName(String.valueOf(sitename.getText()))).setSite_isnotify("0");
             prefsEditor.apply();
-            MainActivity.cnt_timer--;
 
         }
 
@@ -247,25 +254,35 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
 
     @Override
     public void onBindViewHolder(final SiteHolder siteHolder, final int position) {
-        int t = sites.size();
-        for (int i = 0; i < t; i++) {
+
             siteHolder.sitename.setText(sites.get(position).getSite_name());
             Picasso.with(context)
                     .load(sites.get(position).getSite_photo_url())
                     .into(siteHolder.sitePhoto);
-            i++;
+
+
+        if (sites.size() <= 3){
+            siteHolder.switchNotify.setVisibility(View.INVISIBLE);
+        } else {
+            siteHolder.switchNotify.setVisibility(View.VISIBLE);
+
         }
+
         onBind = true;
         appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         prefsEditor = appSharedPrefs.edit();
+
+
+
         if (appSharedPrefs.getBoolean("new elements", false)) {
-            for (int i = 0; i < sites.size(); i++) {
-                sites.get(i).setSite_isnotify("0");
-                MainActivity.mSites.get(i).setSite_isnotify("0");
-            }
+
+                sites.get(position).setSite_isnotify("0");
+                MainActivity.mSites.get(position).setSite_isnotify("0");
+
             prefsEditor.putBoolean("new elements", false);
             prefsEditor.apply();
         }
+
         if (sites.get(position).getSite_isnotify()) {
             siteHolder.switchNotify.setChecked(true);
             int tempPosition = getIndexByName(String.valueOf(siteHolder.sitename.getText()));
@@ -285,6 +302,23 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
             siteHolder.startTimer(appSharedPrefs.getLong(MainActivity.mSites.get(tempPosition).getSite_name() + "time to notify", 0), getIndexByName(String.valueOf(siteHolder.sitename.getText())));
             siteHolder.secondStarter.continueServicetimer(tempPosition);
         }
+
+
+
+
+            //TODO: Продолжить работу над функцией анализа свитчей
+            if (!siteHolder.switchNotify.isChecked()){
+                sites.get(position).setSite_isnotify("0");
+                MainActivity.mSites.get(position).setSite_isnotify("0");
+            }
+
+
+
+
+
+
+
+
         onBind = false;
     }
 

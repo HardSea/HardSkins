@@ -22,6 +22,11 @@ public class Site{
     }
 
     public void setSite_isnotify(String site_isnotify) {
+        if (site_isnotify.equals("1")){
+            MainActivity.cnt_timer++;
+        } else {
+            MainActivity.cnt_timer--;
+        }
         this.site_isnotify = site_isnotify;
     }
 
@@ -29,9 +34,9 @@ public class Site{
         site_name = temp;
         site_address = temp;
         site_photo_url = temp;
-        site_free_bonus_hour = temp;
-        site_free_bonus_hour_count = temp;
-        site_free_bonus_hour_hint = temp;
+        site_free_bonus_hour = site_free_bonus_hour_time;
+        site_free_bonus_hour_count = site_free_bonus_hour_time;
+        site_free_bonus_hour_hint = site_free_bonus_hour_time;
         site_free_bonus_hour_time = temp;
         site_free_bonus_link = temp;
         site_free_bonus_reg = temp;
