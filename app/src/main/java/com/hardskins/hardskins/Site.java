@@ -13,7 +13,7 @@ public class Site{
     private String site_free_bonus_reg_count;
     private String site_ref_code;
     private String site_ref_link;
-    private String site_isnotify;
+
 
 
 
@@ -21,14 +21,7 @@ public class Site{
          super();
     }
 
-    public void setSite_isnotify(String site_isnotify) {
-        if (site_isnotify.equals("1")){
-            MainActivity.cnt_timer++;
-        } else {
-            MainActivity.cnt_timer--;
-        }
-        this.site_isnotify = site_isnotify;
-    }
+
 
     public Site(String temp, String site_isnotify){
         site_name = temp;
@@ -43,7 +36,6 @@ public class Site{
         site_free_bonus_reg_count = temp;
         site_ref_code = temp;
         site_ref_link = temp;
-        this.site_isnotify = site_isnotify;
 
     }
 
@@ -166,15 +158,15 @@ public class Site{
         return site_name;
     }
 
-    public boolean getSite_isnotify() {
-        boolean site_notify = false;
-        if (Integer.parseInt(site_isnotify) == 1){
-            site_notify = true;
-        } else if (Integer.parseInt(site_isnotify) == 0){
-            site_notify = false;
-        }
-        return site_notify;
-    }
+//    public boolean getSite_isnotify() {
+//        boolean site_notify = false;
+//        if (Integer.parseInt(site_isnotify) == 1){
+//            site_notify = true;
+//        } else if (Integer.parseInt(site_isnotify) == 0){
+//            site_notify = false;
+//        }
+//        return site_notify;
+//    }
 
    
 

@@ -6,10 +6,8 @@ import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.TaskStackBuilder;
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -367,7 +365,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startSettings();
                 return true;
             case R.id.refresh_recyclerview:
-                if (cnt_timer == 0 || isFirstRun){
+                if (cnt_timer == 0){
                     siteAdapter.notifyDataSetChanged();
                 }
 
@@ -457,26 +455,26 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onDestroy();
     }
 
-    BroadcastReceiver br = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            updateGUI(intent);
-        }
-    };
-
-    private void updateGUI(Intent intent) {
-        if (intent.getExtras() != null) {
-            String nameTimer = intent.getStringExtra("name");
-            long time = intent.getLongExtra("time", 0);
-
-           // appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-           // prefsEditor = appSharedPrefs.edit();
-           // prefsEditor.putLong(nameTimer + "time to notify", time);
-           // prefsEditor.apply();
-
-
-        }
-    }
+//    BroadcastReceiver br = new BroadcastReceiver() {
+//        @Override
+//        public void onReceive(Context context, Intent intent) {
+//            updateGUI(intent);
+//        }
+//    };
+//
+//    private void updateGUI(Intent intent) {
+//        if (intent.getExtras() != null) {
+//            String nameTimer = intent.getStringExtra("name");
+//            long time = intent.getLongExtra("time", 0);
+//
+//           // appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+//           // prefsEditor = appSharedPrefs.edit();
+//           // prefsEditor.putLong(nameTimer + "time to notify", time);
+//           // prefsEditor.apply();
+//
+//
+//        }
+//    }
 
     private int getIndexByname(String timerName)
     {
@@ -492,18 +490,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onPause() {
         super.onPause();
-        unregisterReceiver(br);
-        Log.d("BroadcastService", "Uregistered broadcast receiver");
+//        unregisterReceiver(br);
+//        Log.d("BroadcastService", "Uregistered broadcast receiver");
 
     }
 
     @Override
     protected void onStop() {
-        try {
-            unregisterReceiver(br);
-        } catch (Exception e) {
-            Log.d("BroadcastService", "Uregistered broadcast receiver"); // Receiver was probably already stopped in onPause()
-        }
+//        try {
+//            unregisterReceiver(br);
+//        } catch (Exception e) {
+//            Log.d("BroadcastService", "Uregistered broadcast receiver"); // Receiver was probably already stopped in onPause()
+//        }
 
         appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
         prefsEditor = appSharedPrefs.edit();
@@ -520,8 +518,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onResume() {
         super.onResume();
-        registerReceiver(br, new IntentFilter(COUNTDOWN_BR));
-        Log.d("BroadcastService", "Registered broadcast receiver");
+//        registerReceiver(br, new IntentFilter(COUNTDOWN_BR));
+//        Log.d("BroadcastService", "Registered broadcast receiver");
 
     }
 }

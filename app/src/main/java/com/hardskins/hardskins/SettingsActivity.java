@@ -197,6 +197,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
 //                            });
 //            AlertDialog alert = builder.create();
 //            alert.show();
+
+
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
             SharedPreferences.Editor editor = prefs.edit();
             long lastDownload = prefs.getLong("LastDownloadFromServer", 0);
@@ -207,7 +209,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             AlertDialog.Builder ad;
             ad = new AlertDialog.Builder(SettingsActivity.this);
             ad.setTitle("Обновить данные с сервера?");  // заголовок
-            ad.setMessage("Обновляться можно только раз в сутки. \nДата последнего обновления: " + df.format(lastDateDownload)); // сообщение
+            ad.setMessage("Внимание! После обновления все таймеры могут обнулиться!!! \n\nОбновляться можно только раз в сутки. \nДата последнего обновления: " + df.format(lastDateDownload)); // сообщение
             ad.setPositiveButton("Обновить", new OnClickListener() {
                 public void onClick(DialogInterface dialog, int arg1) {
                     shouldAllowBack = false;
@@ -235,14 +237,11 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     assert i != null;
                     i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                    // TODO: продолжение таймеров после обновления через настройки
-                    shouldAllowBack = true;
-
+                   shouldAllowBack = true;
 
                     showWorkingDialog();
 
                     new Handler().postDelayed(new Runnable() {
-
                         @Override
                         public void run() {
                             removeWorkingDialog();
