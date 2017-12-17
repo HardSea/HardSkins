@@ -60,9 +60,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private final Gson gson = new Gson();
     private SiteAdapter siteAdapter;
     private SharedPreferences appSharedPrefs;
-    private SharedPreferences.Editor prefsEditor;
     private String TAG = "HardSkins";
-    public final static String COUNTDOWN_BR = "hardskins.countdown_br";
     protected static int cnt_timer;
     public static Activity mainActivity;
     public  boolean isFirstRun;
@@ -118,19 +116,22 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void continueServicetimer(int position) {
+    public void continueServicetimer(int position, String nameSite) {
+
+
 
         appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-        String nameSite = mSites.get(position).getSite_name();
-        long temptime = appSharedPrefs.getLong(nameSite + "time to notify", 0);
+
+        Date date = new Date();
+        long nowtime = date.getTime();
+        long timeEndTimer = appSharedPrefs.getLong(nameSite + "time end timer", 0);
+        long setTime;
+        setTime = timeEndTimer - nowtime;
+
         startService(new Intent(this, BroadcastService.class)
-                .putExtra("time", temptime)
+                .putExtra("time", setTime)
                 .putExtra("nameSite", mSites.get(position).getSite_name())
                 .setAction("SERVICE_CONTINUE"));
-
-
-
-
 
         Log.d("BroadcastService", "Started service");
     }
@@ -240,7 +241,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         String json = appSharedPrefs.getString(TAG_PREFS, "");
         cnt_timer = appSharedPrefs.getInt("count timer", 0);
         Type type = new TypeToken<ArrayList<Site>>(){}.getType();
-      //  mSites.clear();
         mSites = gson.fromJson(json, type);
 
         Log.d(TAG, "Size of loading array = " + mSites.size());
@@ -456,39 +456,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         for (int position = 0; position < mSites.size(); position++) {
             Picasso.with(context).invalidate(mSites.get(position).getSite_photo_url());
         }
-
-        Date date = new Date();
-        long time = date.getTime();
-        appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-        prefsEditor = appSharedPrefs.edit();
-        prefsEditor.putLong("LastCloseAppTime", time);
-        prefsEditor.apply();
-
-
-
         super.onDestroy();
     }
 
-//    BroadcastReceiver br = new BroadcastReceiver() {
-//        @Override
-//        public void onReceive(Context context, Intent intent) {
-//            updateGUI(intent);
-//        }
-//    };
-//
-//    private void updateGUI(Intent intent) {
-//        if (intent.getExtras() != null) {
-//            String nameTimer = intent.getStringExtra("name");
-//            long time = intent.getLongExtra("time", 0);
-//
-//           // appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-//           // prefsEditor = appSharedPrefs.edit();
-//           // prefsEditor.putLong(nameTimer + "time to notify", time);
-//           // prefsEditor.apply();
-//
-//
-//        }
-//    }
 
     private int getIndexByname(String timerName)
     {
@@ -504,22 +474,14 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onPause() {
         super.onPause();
-//        unregisterReceiver(br);
-//        Log.d("BroadcastService", "Uregistered broadcast receiver");
 
     }
 
     @Override
     protected void onStop() {
-//        try {
-//            unregisterReceiver(br);
-//        } catch (Exception e) {
-//            Log.d("BroadcastService", "Uregistered broadcast receiver"); // Receiver was probably already stopped in onPause()
-//        }
-
         appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
 
-        prefsEditor = appSharedPrefs.edit();
+        SharedPreferences.Editor prefsEditor = appSharedPrefs.edit();
 
         prefsEditor.putInt("count timer", cnt_timer);
         String json = gson.toJson(mSites);
@@ -530,11 +492,4 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         super.onStop();
     } //save data to sharedpreference
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-//        registerReceiver(br, new IntentFilter(COUNTDOWN_BR));
-//        Log.d("BroadcastService", "Registered broadcast receiver");
-
-    }
 }

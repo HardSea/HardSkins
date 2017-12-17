@@ -7,7 +7,6 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.CountDownTimer;
 import android.os.IBinder;
-import android.preference.PreferenceManager;
 import android.util.Log;
 
 import java.util.ArrayList;
@@ -18,12 +17,11 @@ public class  BroadcastService extends Service {
     private final static String TAG = "BroadcastService";
     private int cnt_service = 0;
     private List<Timer> mTimers = new ArrayList<>();
-    public final static String COUNTDOWN_BR = "hardskins.countdown_br";
-    Intent bi = new Intent(COUNTDOWN_BR);
-    private int position;
     private SharedPreferences appSharedPrefs;
     private SharedPreferences.Editor prefsEditor;
     private Context context = this;
+    private int position;
+
 
 
 
@@ -131,18 +129,6 @@ public class  BroadcastService extends Service {
                 @Override
                 public void onTick(long l) {
                     Log.d("BroadcastService", nameTimer + " countdown timer seconds reamaning: " + l/1000);
-                    appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-
-                    prefsEditor = appSharedPrefs.edit();
-                    prefsEditor.putLong(nameTimer + "time to notify", l);
-                    prefsEditor.apply();
-
-//                    bi.putExtra("name", nameTimer);
-//                    bi.putExtra("time", l);
-//                    bi.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//                    sendBroadcast(bi);
-
-
                 }
 
                 @Override
@@ -159,8 +145,5 @@ public class  BroadcastService extends Service {
             return nameTimer;
         }
 
-        public void setNameTimer(String nameTimer) {
-            this.nameTimer = nameTimer;
-        }
     }
 }

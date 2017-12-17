@@ -28,7 +28,7 @@ import java.util.List;
 
 public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
 
-    static List<Site> sites;
+    private static List<Site> sites;
     private Context context;
     private SharedPreferences appSharedPrefs;
     private SharedPreferences.Editor prefsEditor;
@@ -103,7 +103,8 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
                     prefsEditor = appSharedPrefs.edit();
                     Calendar mcurrentTime1 = Calendar.getInstance();
                     int hour = mcurrentTime1.get(Calendar.HOUR_OF_DAY);
-                    int minute = (int) (appSharedPrefs.getLong(sitename.getText() + "time to notify", 0) / 3600000);
+                    int minute =  mcurrentTime1.get(Calendar.MINUTE);
+
                     TimePickerDialog mTimePicker;
                     mTimePicker = new TimePickerDialog(context, new TimePickerDialog.OnTimeSetListener() {
                         @Override
@@ -186,10 +187,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
         private void switchOff() {
             appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
             prefsEditor = appSharedPrefs.edit();
-            prefsEditor.putLong(String.valueOf(sitename.getText()) + "time to notify", 0);
             prefsEditor.remove(sitename.getText() + "time end timer");
-            // sites.get(getIndexByName(String.valueOf(sitename.getText()))).setSite_time_to_notify(0);
-            // MainActivity.mSites.get(getIndexByName(String.valueOf(sitename.getText()))).setSite_time_to_notify(0);
             prefsEditor.remove(context.getString(R.string.starttimertimer) + sitename.getText());
             prefsEditor.putBoolean(String.valueOf(sitename.getText()) + "site is notify", false);
             Log.d("HardSkins", "Switch off clicked!");
@@ -279,45 +277,27 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
 
 
         if (appSharedPrefs.getBoolean("new elements", false)) {
-
             prefsEditor.putBoolean(String.valueOf(siteHolder.sitename.getText()) + "site is notify", false);
-
-//            sites.get(position).setSite_isnotify("0");
-//                MainActivity.mSites.get(position).setSite_isnotify("0");
-
             prefsEditor.putBoolean("new elements", false);
             prefsEditor.apply();
         }
 
-        //if (sites.get(position).getSite_isnotify()) {
         if (appSharedPrefs.getBoolean(siteHolder.sitename.getText() + "site is notify", false)) {
-
-            // long timeStartTimer = appSharedPrefs.getLong(siteHolder.sitename.getText() + "time start timer", 0);
-            //  long timeToNotify = appSharedPrefs.getLong(siteHolder.sitename.getText() + "time to notify",0);
-
+            Date date = new Date();
+            long nowtime = date.getTime();
             long timeEndTimer = appSharedPrefs.getLong(siteHolder.sitename.getText() + "time end timer", 0);
             siteHolder.switchNotify.setChecked(true);
             int tempPosition = getIndexByName(String.valueOf(siteHolder.sitename.getText()));
-            long timeLastClose = appSharedPrefs.getLong("LastCloseAppTime", 0);
-            long timeLastOpen = appSharedPrefs.getLong("LastOpenTime", 0);
-            // long timeRemaning = timeLastOpen - timeLastClose;
             long setTime;
-            if (timeEndTimer < timeLastOpen) {
+            if (timeEndTimer < nowtime) {
                 setTime = 500;
             } else {
-                //setTime = timeToNotify - timeRemaning;
-                setTime = timeEndTimer - timeLastClose;
+                setTime = timeEndTimer - nowtime;
             }
-//
-//            if (timeToNotify - timeRemaning >= 0) {
-//                setTime = timeToNotify - timeRemaning;
-//            } else {
-//                setTime = 500;
-//            }
 
             siteHolder.textDate.setVisibility(View.VISIBLE);
             siteHolder.startTimer(setTime, getIndexByName(String.valueOf(siteHolder.sitename.getText())));
-            siteHolder.secondStarter.continueServicetimer(tempPosition);
+            siteHolder.secondStarter.continueServicetimer(tempPosition, String.valueOf(siteHolder.sitename.getText()));
         }
 
 
