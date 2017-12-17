@@ -214,7 +214,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 public void onClick(DialogInterface dialog, int arg1) {
                     shouldAllowBack = false;
                     @SuppressLint("SimpleDateFormat") java.text.DateFormat df = new SimpleDateFormat("EEEE hh:mm a");
-                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
+                    //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
+                    SharedPreferences prefs = getApplicationContext().getSharedPreferences("default", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = prefs.edit();
                     Date date = new Date();
                     long time = date.getTime();

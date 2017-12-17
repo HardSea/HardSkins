@@ -76,6 +76,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mainActivity = this;
         context = this;
         appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
         isFirstRun = appSharedPrefs.getBoolean("FIRSTRUN", true);
 
         firstrun(); // check on first run and initializedata
@@ -194,14 +195,16 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
     private void firstrun() {
         if (isFirstRun){
+            isFirstRun = false;
             appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
+
 
 
 
             SharedPreferences.Editor editor = appSharedPrefs.edit();
 
             if (isOnline()){
-                mSites.clear();
+
                 mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_3)));
                 Log.d(TAG, "Site add!");
                 mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_3)));
@@ -215,7 +218,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 Log.d(TAG, "First time has been closed!");
 
             } else {
-                mSites.clear();
+
                 mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_0)));
                 Log.d(TAG, "Site add!");
                 mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_1)));
@@ -445,8 +448,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
             startHelp();
     }
 
-
-
     @Override
     protected void onDestroy() {
         stopService(new Intent(this, BroadcastService.class));
@@ -517,6 +518,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 //        }
 
         appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this.getApplicationContext());
+
         prefsEditor = appSharedPrefs.edit();
 
         prefsEditor.putInt("count timer", cnt_timer);

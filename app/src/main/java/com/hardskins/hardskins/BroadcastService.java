@@ -132,6 +132,7 @@ public class  BroadcastService extends Service {
                 public void onTick(long l) {
                     Log.d("BroadcastService", nameTimer + " countdown timer seconds reamaning: " + l/1000);
                     appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+
                     prefsEditor = appSharedPrefs.edit();
                     prefsEditor.putLong(nameTimer + "time to notify", l);
                     prefsEditor.apply();

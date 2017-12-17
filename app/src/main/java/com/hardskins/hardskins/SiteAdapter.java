@@ -176,9 +176,6 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
 
             // sites.get(getIndexByName(String.valueOf(sitename.getText()))).setSite_time_to_notify(0);
             // MainActivity.mSites.get(getIndexByName(String.valueOf(sitename.getText()))).setSite_time_to_notify(0);
-
-            appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-            prefsEditor = appSharedPrefs.edit();
             prefsEditor.remove(context.getString(R.string.starttimertimer) + sitename.getText());
             prefsEditor.putBoolean(String.valueOf(sitename.getText()) + "site is notify", false);
             Log.d("HardSkins", "Switch off clicked!");
