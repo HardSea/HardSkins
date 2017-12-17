@@ -13,11 +13,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.CompoundButton;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
+import android.widget.TimePicker;
+import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
@@ -28,7 +34,6 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
     private SharedPreferences.Editor prefsEditor;
     private TimerStarter firstStarter;
     private boolean onBind;
-
 
 
     class SiteHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
@@ -65,8 +70,18 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
                         Site tempSite = sites.get(tempPosition);
                         if (b) {
                             if (!isContinue) {
-                                switchOn(Long.parseLong(tempSite.getSite_free_bonus_hour_time()));
-                                secondStarter.startServiceTimer(tempPosition, Long.parseLong(tempSite.getSite_free_bonus_hour_time()));
+                                long timeBonusBySite = Long.parseLong(tempSite.getSite_free_bonus_hour_time());
+                                Date date = new Date();
+                                long timeStartTimer = date.getTime();
+                                long timeEndTimer = timeStartTimer + timeBonusBySite;
+
+                                appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+                                prefsEditor = appSharedPrefs.edit();
+                                prefsEditor.putLong(sitename.getText() + "time start timer", timeStartTimer);
+                                prefsEditor.putLong(sitename.getText() + "time end timer", timeEndTimer);
+                                prefsEditor.apply();
+                                switchOn(timeBonusBySite);
+                                secondStarter.startServiceTimer(tempPosition, timeBonusBySite);
                             }
                         } else {
                             isContinue = false;
@@ -85,6 +100,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
                 @Override
                 public void onClick(View view) {
                     appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+                    prefsEditor = appSharedPrefs.edit();
                     Calendar mcurrentTime1 = Calendar.getInstance();
                     int hour = mcurrentTime1.get(Calendar.HOUR_OF_DAY);
                     int minute = (int) (appSharedPrefs.getLong(sitename.getText() + "time to notify", 0) / 3600000);
@@ -93,10 +109,15 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
                         @Override
                         public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                             isContinue = false;
-                            int tempPosition = getIndexByName(String.valueOf(sitename.getText()));
-                            Toast.makeText(context, selectedHour + ":" + selectedMinute, Toast.LENGTH_SHORT).show();
                             switchOff();
                             switchNotify.setChecked(false);
+                            Date date = new Date();
+                            long currentTimeDate = date.getTime();
+                            long timeSet = ((selectedHour * 3600000) + (selectedMinute * 60000)) + currentTimeDate;
+                            prefsEditor.putLong(sitename.getText() + "time end timer", timeSet);
+                            prefsEditor.apply();
+                            int tempPosition = getIndexByName(String.valueOf(sitename.getText()));
+
                             isContinue = true;
                             long selectedTime = (selectedHour * 3600000) + (selectedMinute * 60000);
                             switchOn(selectedTime);
@@ -116,14 +137,10 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
 
         void startTimer(final long time, final int position) {
             long tick = 1000;
-            final String nameTimer = sites.get(position).getSite_name();
             t = new CountDownTimer(time, tick) {
 
 
                 public void onTick(long millisUntilFinished) {
-                    //     long remainedSecs = millisUntilFinished / 1000;
-                    //    textDate.setText( + ":" + (remainedSecs / 60) + ":" + (remainedSecs % 60));// manage it accordign to you
-
                     long secondsInMilli = 1000;
                     long minutesInMilli = secondsInMilli * 60;
                     long hoursInMilli = minutesInMilli * 60;
@@ -146,7 +163,6 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
                     Toast.makeText(context, "Finish", Toast.LENGTH_SHORT).show();
                     secondStarter.showNotification(position);
                     cancel();
-                    // switchNotify.setChecked(false);
                 }
             }.start();
 
@@ -154,17 +170,15 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
         }
 
         private void switchOn(long time) {
-            appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-            prefsEditor = appSharedPrefs.edit();
-            prefsEditor.putBoolean(String.valueOf(sitename.getText()) + "site is notify", true);
+
+
+            prefsEditor.putBoolean(sitename.getText() + "site is notify", true);
             prefsEditor.apply();
-//            sites.get(getIndexByName(String.valueOf(sitename.getText()))).setSite_isnotify("1");
-//            MainActivity.mSites.get(getIndexByName(String.valueOf(sitename.getText()))).setSite_isnotify("1");
 
             Log.d("HardSkins", "Switch on clicked!");
             Toast.makeText(context, "Switcher ON", Toast.LENGTH_SHORT).show();
             textDate.setVisibility(View.VISIBLE);
-            // notifyItemMoved(getAdapterPosition(), 0); //working not correct
+
             startTimer(time, getIndexByName(String.valueOf(sitename.getText())));
             MainActivity.cnt_timer++;
         }
@@ -173,7 +187,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
             appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
             prefsEditor = appSharedPrefs.edit();
             prefsEditor.putLong(String.valueOf(sitename.getText()) + "time to notify", 0);
-
+            prefsEditor.remove(sitename.getText() + "time end timer");
             // sites.get(getIndexByName(String.valueOf(sitename.getText()))).setSite_time_to_notify(0);
             // MainActivity.mSites.get(getIndexByName(String.valueOf(sitename.getText()))).setSite_time_to_notify(0);
             prefsEditor.remove(context.getString(R.string.starttimertimer) + sitename.getText());
@@ -246,13 +260,13 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
     @Override
     public void onBindViewHolder(final SiteHolder siteHolder, final int position) {
 
-            siteHolder.sitename.setText(sites.get(position).getSite_name());
-            Picasso.with(context)
-                    .load(sites.get(position).getSite_photo_url())
-                    .into(siteHolder.sitePhoto);
+        siteHolder.sitename.setText(sites.get(position).getSite_name());
+        Picasso.with(context)
+                .load(sites.get(position).getSite_photo_url())
+                .into(siteHolder.sitePhoto);
 
 
-        if (sites.size() <= 3){
+        if (sites.size() <= 3) {
             siteHolder.switchNotify.setVisibility(View.INVISIBLE);
         } else {
             siteHolder.switchNotify.setVisibility(View.VISIBLE);
@@ -262,7 +276,6 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
         onBind = true;
         appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         prefsEditor = appSharedPrefs.edit();
-
 
 
         if (appSharedPrefs.getBoolean("new elements", false)) {
@@ -278,22 +291,32 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
 
         //if (sites.get(position).getSite_isnotify()) {
         if (appSharedPrefs.getBoolean(siteHolder.sitename.getText() + "site is notify", false)) {
+
+            // long timeStartTimer = appSharedPrefs.getLong(siteHolder.sitename.getText() + "time start timer", 0);
+            //  long timeToNotify = appSharedPrefs.getLong(siteHolder.sitename.getText() + "time to notify",0);
+
+            long timeEndTimer = appSharedPrefs.getLong(siteHolder.sitename.getText() + "time end timer", 0);
             siteHolder.switchNotify.setChecked(true);
             int tempPosition = getIndexByName(String.valueOf(siteHolder.sitename.getText()));
             long timeLastClose = appSharedPrefs.getLong("LastCloseAppTime", 0);
             long timeLastOpen = appSharedPrefs.getLong("LastOpenTime", 0);
-            long timeToNotify = appSharedPrefs.getLong(MainActivity.mSites.get(tempPosition).getSite_name() + "time to notify", 0);
-            long timeRemaning = timeLastOpen - timeLastClose;
+            // long timeRemaning = timeLastOpen - timeLastClose;
             long setTime;
-            if (timeToNotify - timeRemaning >= 0) {
-                setTime = timeToNotify - timeRemaning;
-            } else {
+            if (timeEndTimer < timeLastOpen) {
                 setTime = 500;
+            } else {
+                //setTime = timeToNotify - timeRemaning;
+                setTime = timeEndTimer - timeLastClose;
             }
-            prefsEditor.putLong(MainActivity.mSites.get(tempPosition).getSite_name() + "time to notify", setTime);
-            prefsEditor.apply();
+//
+//            if (timeToNotify - timeRemaning >= 0) {
+//                setTime = timeToNotify - timeRemaning;
+//            } else {
+//                setTime = 500;
+//            }
+
             siteHolder.textDate.setVisibility(View.VISIBLE);
-            siteHolder.startTimer(appSharedPrefs.getLong(MainActivity.mSites.get(tempPosition).getSite_name() + "time to notify", 0), getIndexByName(String.valueOf(siteHolder.sitename.getText())));
+            siteHolder.startTimer(setTime, getIndexByName(String.valueOf(siteHolder.sitename.getText())));
             siteHolder.secondStarter.continueServicetimer(tempPosition);
         }
 
