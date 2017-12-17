@@ -63,7 +63,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SharedPreferences.Editor prefsEditor;
     private String TAG = "HardSkins";
     public final static String COUNTDOWN_BR = "hardskins.countdown_br";
-    protected static int cnt_timer = 0;
+    protected static int cnt_timer;
     public static Activity mainActivity;
     public  boolean isFirstRun;
 
@@ -77,10 +77,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         context = this;
         appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
         isFirstRun = appSharedPrefs.getBoolean("FIRSTRUN", true);
+
         firstrun(); // check on first run and initializedata
 
         createNavigationMenu();
-
+        cnt_timer = appSharedPrefs.getInt("count timer", 0);
 
         createRecyclerView();         //creating recyclerview and refreshing new changes in recycler view
         signInFireBase();             // signInAnonymusly to FireBase
@@ -191,30 +192,40 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         return netInfo != null && netInfo.isConnectedOrConnecting();
     } // condition on online
 
-
-
     private void firstrun() {
         if (isFirstRun){
             appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-            mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_0), "0" ));
-            Log.d(TAG, "Site add!");
-            mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_1), "0" ));
-            Log.d(TAG, "Site add!");
-            mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_2), "0" ));
-            Log.d(TAG, "Site add!");
 
-            getOnlineElements(context);
+
 
             SharedPreferences.Editor editor = appSharedPrefs.edit();
+
             if (isOnline()){
+                mSites.clear();
+                mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_3)));
+                Log.d(TAG, "Site add!");
+                mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_3)));
+                Log.d(TAG, "Site add!");
+                mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_3)));
+                Log.d(TAG, "Site add!");
+
                 editor.putBoolean("FIRSTRUN", false);
+                editor.apply();
+                getOnlineElements(context);
                 Log.d(TAG, "First time has been closed!");
 
             } else {
+                mSites.clear();
+                mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_0)));
+                Log.d(TAG, "Site add!");
+                mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_1)));
+                Log.d(TAG, "Site add!");
+                mSites.add(new Site(getResources().getString(R.string.text_for_temp_site_2)));
+                Log.d(TAG, "Site add!");
                 editor.putBoolean("FIRSTRUN", true);
+                editor.apply();
                 Log.d(TAG, "First open, beacouse not internet!");
             }
-            editor.apply();
         } else {
             initializeData();
         }
@@ -231,7 +242,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         Log.d(TAG, "Size of loading array = " + mSites.size());
     } //load saved data from sharedpreference
-
 
     private void createNavigationMenu(){
         Toolbar toolbar =  findViewById(R.id.toolbar);
@@ -365,6 +375,9 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 startSettings();
                 return true;
             case R.id.refresh_recyclerview:
+                if (isFirstRun){
+                    firstrun();
+                }
                 if (cnt_timer == 0){
                     siteAdapter.notifyDataSetChanged();
                 }

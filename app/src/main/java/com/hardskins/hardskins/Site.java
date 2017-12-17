@@ -23,7 +23,7 @@ public class Site{
 
 
 
-    public Site(String temp, String site_isnotify){
+    public Site(String temp){
         site_name = temp;
         site_address = temp;
         site_photo_url = temp;
