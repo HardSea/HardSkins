@@ -1,4 +1,4 @@
-package com.hardskins.hardskins;
+package com.hardskins.hardskins.Activities;
 
 import android.content.Intent;
 import android.os.Bundle;

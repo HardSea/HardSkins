@@ -1,22 +1,16 @@
-package com.hardskins.hardskins;
+package com.hardskins.hardskins.Activities;
 
 
 import android.app.Activity;
-import android.app.Notification;
-import android.app.NotificationManager;
-import android.app.PendingIntent;
-import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.design.widget.NavigationView;
-import android.support.v4.app.NotificationCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
@@ -41,6 +35,12 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+import com.hardskins.hardskins.BroadcastService;
+import com.hardskins.hardskins.Global;
+import com.hardskins.hardskins.R;
+import com.hardskins.hardskins.Site;
+import com.hardskins.hardskins.SiteAdapter;
+import com.hardskins.hardskins.supportiveclasses.TimerStarter;
 import com.squareup.picasso.Picasso;
 
 import java.lang.reflect.Type;
@@ -48,12 +48,11 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import static java.lang.Thread.MAX_PRIORITY;
 import static java.lang.Thread.sleep;
 
-public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, TimerStarter{
+public class MainActivity extends AppCompatActivity implements NavigationView.OnNavigationItemSelectedListener, TimerStarter {
 
-    protected static List<Site> mSites = new ArrayList<>();
+    public static List<Site> mSites = new ArrayList<>();
     private Context context;
     private com.github.clans.fab.FloatingActionMenu fab;
     private final String TAG_PREFS = "com.hardskins.hardskins";
@@ -61,7 +60,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     private SiteAdapter siteAdapter;
     private SharedPreferences appSharedPrefs;
     private String TAG = "HardSkins";
-    protected static int cnt_timer;
+    public static int cnt_timer;
     public static Activity mainActivity;
     public  boolean isFirstRun;
 
@@ -150,41 +149,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Log.d("BroadcastService", "Stoped service");
     }
 
-    @Override
-    public  void showNotification(int position) {
-        String nameSite = mSites.get(position).getSite_name();
-
-        Intent resultIntent = new Intent(this, MainActivity.class);
-        TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
-        stackBuilder.addParentStack(MainActivity.class);
-        stackBuilder.addNextIntent(resultIntent);
-        PendingIntent resultPendingIntent =
-                stackBuilder.getPendingIntent(
-                        0,
-                        PendingIntent.FLAG_UPDATE_CURRENT
-                );
-        PendingIntent pIntent = PendingIntent.getActivity(this, 0, resultIntent, 0);
-
-        NotificationCompat.Builder mBuilder =
-                new NotificationCompat.Builder(context, ALARM_SERVICE)
-                        .setSmallIcon(R.mipmap.ic_launcher)
-                        .setContentTitle("Ваш бонус готов!")
-                        .setContentText(nameSite)
-                        .setPriority(MAX_PRIORITY)
-                        .addAction(R.mipmap.ic_launcher, "Открыть сайт", pIntent)
-                        .addAction(R.mipmap.ic_launcher, "Выключить уведомления", pIntent)
-                        .setLights(10,10,10)
-                        .setDefaults(Notification.DEFAULT_SOUND| Notification.DEFAULT_LIGHTS);
-        mBuilder.setContentIntent(resultPendingIntent);
-        NotificationManager mNotificationManager =
-                (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        assert mNotificationManager != null;
-        mNotificationManager.notify(position, mBuilder.build());
-
-        Vibrator v = (Vibrator) this.context.getSystemService(Context.VIBRATOR_SERVICE);
-        assert v != null;
-        v.vibrate(750);
-    }
 
     public boolean isOnline() {
         ConnectivityManager cm =
@@ -376,6 +340,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         switch (item.getItemId()){
             case R.id.action_setting_button:
                 startSettings();
+
                 return true;
             case R.id.refresh_recyclerview:
                 if (isFirstRun){
@@ -432,7 +397,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Intent intent = new Intent(MainActivity.this, SettingsActivity.class);
 
         startActivity(intent);
-        finish();
+       finish();
     }
 
     public void startHelp(){

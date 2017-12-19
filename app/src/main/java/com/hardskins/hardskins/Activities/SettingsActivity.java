@@ -1,4 +1,4 @@
-package com.hardskins.hardskins;
+package com.hardskins.hardskins.Activities;
 
 import android.annotation.SuppressLint;
 import android.annotation.TargetApi;
@@ -9,9 +9,6 @@ import android.content.DialogInterface.OnClickListener;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.media.Ringtone;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -19,19 +16,22 @@ import android.preference.ListPreference;
 import android.preference.Preference;
 import android.preference.PreferenceFragment;
 import android.preference.PreferenceManager;
-import android.preference.RingtonePreference;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
-import android.text.TextUtils;
+import android.util.Log;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import com.hardskins.hardskins.AppCompatPreferenceActivity;
+import com.hardskins.hardskins.R;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class SettingsActivity extends AppCompatPreferenceActivity {
+public class SettingsActivity extends AppCompatPreferenceActivity{
     private boolean shouldAllowBack = true;
+
 
     private static Preference.OnPreferenceChangeListener sBindPreferenceSummaryToValueListener = new Preference.OnPreferenceChangeListener() {
         @Override
@@ -39,31 +39,28 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             String stringValue = value.toString();
 
             if (preference instanceof ListPreference) {
-                ListPreference listPreference = (ListPreference) preference;
-                int index = listPreference.findIndexOfValue(stringValue);
-                preference.setSummary(
-                        index >= 0
-                                ? listPreference.getEntries()[index]
-                                : null);
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(preference.getContext());
+                SharedPreferences.Editor editor = prefs.edit();
+                switch (preference.getKey()) {
+                    case "vibration_count":
+                        Log.d("HardSkins", "select vibration count");
+                        editor.putInt("Number of vibrate", Integer.parseInt(stringValue));
+                        editor.apply();
+                        int indexNumber = prefs.getInt("Number of vibrate", 3);
+                        preference.setSummary(String.valueOf(indexNumber));
+                        break;
+                    case "vibration_time":
+                        Log.d("HardSkins", "select vibration time");
+                        editor.putInt("Time of vibrate", Integer.parseInt(stringValue));
+                        editor.apply();
+                        int indexTime = prefs.getInt("Time of vibrate", 3);
 
-            } else if (preference instanceof RingtonePreference) {
-                if (TextUtils.isEmpty(stringValue)) {
-                    preference.setSummary(R.string.pref_ringtone_silent);
+                        preference.setSummary(preference.getContext().getResources().getStringArray(R.array.pref_time_of_vibration)[indexTime-1]);
+                        break;
+                    default:
+                        break;
 
-                } else {
-                    Ringtone ringtone = RingtoneManager.getRingtone(
-                            preference.getContext(), Uri.parse(stringValue));
-
-                    if (ringtone == null) {
-                        preference.setSummary(null);
-                    } else {
-                        String name = ringtone.getTitle(preference.getContext());
-                        preference.setSummary(name);
-                    }
                 }
-
-            } else {
-                preference.setSummary(stringValue);
             }
             return true;
         }
@@ -103,7 +100,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
     @Override
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
     public void onBuildHeaders(List<Header> target) {
         loadHeadersFromResource(R.xml.pref_headers, target);
     }
@@ -111,7 +107,6 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     protected boolean isValidFragment(String fragmentName) {
         return PreferenceFragment.class.getName().equals(fragmentName)
                 || GeneralPreferenceFragment.class.getName().equals(fragmentName)
-                || DataSyncPreferenceFragment.class.getName().equals(fragmentName)
                 || NotificationPreferenceFragment.class.getName().equals(fragmentName);
     }
 
@@ -123,8 +118,9 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
             super.onCreate(savedInstanceState);
             addPreferencesFromResource(R.xml.pref_general);
             setHasOptionsMenu(true);
-            bindPreferenceSummaryToValue(findPreference("example_text"));
-            bindPreferenceSummaryToValue(findPreference("example_list"));
+            bindPreferenceSummaryToValue(findPreference("vibration_count"));
+            bindPreferenceSummaryToValue(findPreference("vibration_time"));
+
         }
 
         @Override
@@ -159,46 +155,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
     }
 
-    @TargetApi(Build.VERSION_CODES.HONEYCOMB)
-    public static class DataSyncPreferenceFragment extends PreferenceFragment {
-        @Override
-        public void onCreate(Bundle savedInstanceState) {
-            super.onCreate(savedInstanceState);
-            addPreferencesFromResource(R.xml.pref_data_sync);
-            setHasOptionsMenu(true);
-            bindPreferenceSummaryToValue(findPreference("sync_frequency"));
-        }
 
-        @Override
-        public boolean onOptionsItemSelected(MenuItem item) {
-            int id = item.getItemId();
-            if (id == android.R.id.home) {
-                startActivity(new Intent(getActivity(), SettingsActivity.class));
-                return true;
-            }
-            return super.onOptionsItemSelected(item);
-        }
-    }
 
     @Override
     public void onHeaderClick(Header header, int position) {
         super.onHeaderClick(header, position);
         if (header.id == R.id.download_data_from_server) {
-
-//            AlertDialog.Builder builder = new AlertDialog.Builder(SettingsActivity.this);
-//            builder.setTitle("Важное сообщение!")
-//                    .setMessage("Покормите кота!")
-//                    .setCancelable(false)
-//                    .setNegativeButton("ОК, иду на кухню",
-//                            new DialogInterface.OnClickListener() {
-//                                public void onClick(DialogInterface dialog, int id) {
-//                                    dialog.cancel();
-//                                }
-//                            });
-//            AlertDialog alert = builder.create();
-//            alert.show();
-
-
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
             SharedPreferences.Editor editor = prefs.edit();
             long lastDownload = prefs.getLong("LastDownloadFromServer", 0);
@@ -214,8 +176,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                 public void onClick(DialogInterface dialog, int arg1) {
                     shouldAllowBack = false;
                     @SuppressLint("SimpleDateFormat") java.text.DateFormat df = new SimpleDateFormat("EEEE hh:mm a");
-                    //SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
-                    SharedPreferences prefs = getApplicationContext().getSharedPreferences("default", Context.MODE_PRIVATE);
+                    SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(SettingsActivity.this);
+                    //SharedPreferences prefs = getApplicationContext().getSharedPreferences("default", Context.MODE_PRIVATE);
                     SharedPreferences.Editor editor = prefs.edit();
                     Date date = new Date();
                     long time = date.getTime();
@@ -223,6 +185,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
                     // TODO поменять время на раз в сутки(77760000)
                     if (time - 3000 > lastDownload) {
                         editor.putBoolean("GetOnlineElement", true);
+                        editor.apply();
                         MainActivity.getOnlineElements(getApplicationContext());
                     } else {
                         Toast.makeText(getApplicationContext(), "Обновлять данные с сервера \n    можно только раз в сутки", Toast.LENGTH_SHORT).show();
@@ -299,7 +262,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
     }
 
 
-    @Override
+
+        @Override
     public void onBackPressed() {
         if (!shouldAllowBack) {
             Toast.makeText(this, "Дождитесь окончания загрузки", Toast.LENGTH_SHORT).show();
@@ -312,4 +276,5 @@ public class SettingsActivity extends AppCompatPreferenceActivity {
         }
 
     }
+
 }

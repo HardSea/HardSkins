@@ -20,6 +20,9 @@ import android.widget.TextView;
 import android.widget.TimePicker;
 import android.widget.Toast;
 
+import com.hardskins.hardskins.Activities.MainActivity;
+import com.hardskins.hardskins.Activities.SiteActivity;
+import com.hardskins.hardskins.supportiveclasses.TimerStarter;
 import com.squareup.picasso.Picasso;
 
 import java.util.Calendar;
@@ -162,7 +165,6 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
                 public void onFinish() {
                     textDate.setText(R.string.zerozerozerozerozerozero);
                     Toast.makeText(context, "Finish", Toast.LENGTH_SHORT).show();
-                    secondStarter.showNotification(position);
                     cancel();
                 }
             }.start();
@@ -225,11 +227,11 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
     }
 
 
-    static void cleanList() {
+    public static void cleanList() {
         sites.clear();
     }
 
-    static void setSites(List<Site> sites1) {
+    public static void setSites(List<Site> sites1) {
         sites = sites1;
     }
 
@@ -311,7 +313,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
 
     }
 
-    SiteAdapter(List<Site> sites, Context context, TimerStarter timerStarter) {
+    public SiteAdapter(List<Site> sites, Context context, TimerStarter timerStarter) {
         SiteAdapter.sites = sites;
         this.context = context;
         firstStarter = timerStarter;

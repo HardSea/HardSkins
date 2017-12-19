@@ -1,4 +1,4 @@
-package com.hardskins.hardskins;
+package com.hardskins.hardskins.Activities;
 
 import android.annotation.SuppressLint;
 import android.content.ClipData;
@@ -21,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.hardskins.hardskins.R;
+import com.hardskins.hardskins.Site;
 import com.squareup.picasso.Picasso;
 
 public class SiteActivity extends AppCompatActivity {

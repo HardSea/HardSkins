@@ -1,7 +1,9 @@
-package com.hardskins.hardskins;
+package com.hardskins.hardskins.Activities;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+
+import com.hardskins.hardskins.R;
 
 public class HelpActivity extends AppCompatActivity {
 
