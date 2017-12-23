@@ -36,6 +36,22 @@
                 android:textSize="30sp"
                 tools:text="sdfsd" />
 
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+
+                <Button
+                    android:id="@+id/openinbrowser_card"
+                    style="@android:style/Widget.Holo.Button.Borderless"
+
+                    android:layout_width="28dp"
+                    android:layout_height="29dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_alignParentEnd="true"
+                    android:layout_alignParentRight="true"
+                    android:background="@drawable/ico_browser" />
+            </RelativeLayout>
+
         </LinearLayout>
 
 

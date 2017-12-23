@@ -45,6 +45,9 @@
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
         <service android:name=".BroadcastService" />
+
+
+
     </application>
 
 </manifest>

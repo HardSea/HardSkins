@@ -2,10 +2,13 @@ package com.hardskins.hardskins;
 
 import android.app.TimePickerDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.CountDownTimer;
 import android.preference.PreferenceManager;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.SwitchCompat;
@@ -13,6 +16,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -50,6 +55,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
         private TimerStarter secondStarter;
         private String locale = "%02d:%02d:%02d";
         private boolean isContinue = false;
+        private Button openinbrowser_card;
 
 
         SiteHolder(View itemView, TimerStarter timerStarter) {
@@ -63,6 +69,8 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
             linearCard.setOnClickListener(this);
             linearCard.setOnLongClickListener(this);
             secondStarter = timerStarter;
+            openinbrowser_card = itemView.findViewById(R.id.openinbrowser_card);
+
 
 
             switchNotify.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -96,6 +104,69 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
                         }
                     }
 
+                }
+            });
+
+            openinbrowser_card.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final CheckBox dontShowAgain;
+                    AlertDialog.Builder adb = new AlertDialog.Builder(context);
+                    LayoutInflater adbInflater = LayoutInflater.from(context);
+                    View eulaLayout = adbInflater.inflate(R.layout.checkbox, null);
+                    SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+                    String skipMessage = settings.getString("skipMessage", "NOT checked");
+
+                    dontShowAgain =  eulaLayout.findViewById(R.id.skip);
+                    adb.setView(eulaLayout);
+                    adb.setTitle("Открыть сайт в браузере?");
+
+                    adb.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            String checkBoxResult = "NOT checked";
+
+                            if (dontShowAgain.isChecked()) {
+                                checkBoxResult = "checked";
+                            }
+
+                            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+                            SharedPreferences.Editor editor = settings.edit();
+
+                            editor.putString("skipMessage", checkBoxResult);
+                            editor.apply();
+
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(MainActivity.mSites.get(getIndexByName(String.valueOf(sitename.getText()))).getSite_address()));
+
+                            context.startActivity(browserIntent);
+
+                        }
+                    });
+
+                    adb.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            String checkBoxResult = "NOT checked";
+
+                            if (dontShowAgain.isChecked()) {
+                                checkBoxResult = "checked";
+                            }
+
+                            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+                            SharedPreferences.Editor editor = settings.edit();
+
+                            editor.putString("skipMessage", checkBoxResult);
+                            editor.apply();
+
+                            // Do what you want to do on "CANCEL" action
+
+                        }
+                    });
+
+                    if (!skipMessage.equals("checked")) {
+                        adb.show();
+                    } else {
+                        Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(MainActivity.mSites.get(getIndexByName(String.valueOf(sitename.getText()))).getSite_address()));
+                        context.startActivity(browserIntent);
+                    }
                 }
             });
 

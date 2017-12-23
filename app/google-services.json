@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "1073915095531-j71eaef9455naf6hrjmiebt29une031a.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.hardskins.hardskins",
+            "certificate_hash": "b0edd9a7f9cc470123a8dd7b339115a431f35bc8"
+          }
+        },
+        {
           "client_id": "1073915095531-6gojs5on5sc689kk7vg2t7trhprguu0s.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
