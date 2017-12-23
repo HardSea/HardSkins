@@ -7,12 +7,13 @@ public class Site{
     private String site_free_bonus_hour;
     private String site_free_bonus_hour_count;
     private String site_free_bonus_hour_hint;
-    private String site_free_bonus_hour_time;
+    private long site_free_bonus_hour_time;
     private String site_free_bonus_link;
     private String site_free_bonus_reg;
     private String site_free_bonus_reg_count;
     private String site_ref_code;
     private String site_ref_link;
+    private String site_free_bonus_hour_time_text;
 
 
 
@@ -27,10 +28,10 @@ public class Site{
         site_name = temp;
         site_address = temp;
         site_photo_url = temp;
-        site_free_bonus_hour = site_free_bonus_hour_time;
-        site_free_bonus_hour_count = site_free_bonus_hour_time;
-        site_free_bonus_hour_hint = site_free_bonus_hour_time;
-        site_free_bonus_hour_time = temp;
+        //site_free_bonus_hour = site_free_bonus_hour_time;
+        //site_free_bonus_hour_count = site_free_bonus_hour_time;
+        //site_free_bonus_hour_hint = site_free_bonus_hour_time;
+        //site_free_bonus_hour_time = temp;
         site_free_bonus_link = temp;
         site_free_bonus_reg = temp;
         site_free_bonus_reg_count = temp;
@@ -83,7 +84,13 @@ public class Site{
     }
 
     public String getSite_free_bonus_hour() {
-        return site_free_bonus_hour;
+        if (site_free_bonus_hour.equals("Yes") || site_free_bonus_hour.equals("yes")) {
+            return "Есть";
+        } else if (site_free_bonus_hour.equals("No") || site_free_bonus_hour.equals("no")){
+            return "Нету";
+        } else {
+            return site_free_bonus_hour;
+        }
     }
 
     public void setSite_free_bonus_hour(String site_free_bonus_hour) {
@@ -91,7 +98,7 @@ public class Site{
     }
 
     public String getSite_free_bonus_hour_count() {
-        return site_free_bonus_hour_count;
+        return (site_free_bonus_hour_count + "$");
     }
 
     public void setSite_free_bonus_hour_count(String site_free_bonus_hour_count) {
@@ -106,13 +113,7 @@ public class Site{
         this.site_free_bonus_hour_hint = site_free_bonus_hour_hint;
     }
 
-    public String getSite_free_bonus_hour_time() {
-        return site_free_bonus_hour_time;
-    }
 
-    public void setSite_free_bonus_hour_time(String site_free_bonus_hour_time) {
-        this.site_free_bonus_hour_time = site_free_bonus_hour_time;
-    }
 
     public String getSite_free_bonus_link() {
         return site_free_bonus_link;
@@ -178,4 +179,19 @@ public class Site{
     }
 
 
+    public String getSite_free_bonus_hour_time_text() {
+        return (site_free_bonus_hour_time_text + " час");
+    }
+
+    public void setSite_free_bonus_hour_time_text(String site_free_bonus_hour_time_text) {
+        this.site_free_bonus_hour_time_text = site_free_bonus_hour_time_text;
+    }
+
+    public void setSite_free_bonus_hour_time(long site_free_bonus_hour_time) {
+        this.site_free_bonus_hour_time = site_free_bonus_hour_time;
+    }
+
+    public long getSite_free_bonus_hour_time() {
+        return site_free_bonus_hour_time;
+    }
 }

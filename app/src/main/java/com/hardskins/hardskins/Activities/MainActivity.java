@@ -417,7 +417,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     protected void onDestroy() {
         stopService(new Intent(this, BroadcastService.class));
         Log.i("BroadcastService", "Stopped service");
+        for (int i = 0; i < mSites.size(); i++) {
+            stopServiceTimer(i);
 
+        }
         for (int position = 0; position < mSites.size(); position++) {
             Picasso.with(context).invalidate(mSites.get(position).getSite_photo_url());
         }

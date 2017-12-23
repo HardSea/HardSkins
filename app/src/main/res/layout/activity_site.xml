@@ -1,26 +1,38 @@
 <?xml version="1.0" encoding="utf-8"?>
 <ScrollView xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/scroll"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/site_activity_gradient"
     xmlns:android="http://schemas.android.com/apk/res/android">
 
-<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
+    android:orientation="vertical"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
+
     tools:context="com.hardskins.hardskins.Activities.SiteActivity">
+
+    <Button
+        android:id="@+id/close_button"
+        style="@style/Widget.AppCompat.Button.Borderless"
+        android:layout_width="43dp"
+        android:layout_height="43dp"
+        android:layout_margin="10dp"
+        android:background="?attr/actionModeCloseDrawable"
+        android:onClick="closeActivity" />
 
     <TextView
         android:id="@+id/info_site_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="28dp"
-        android:layout_marginTop="44dp"
-        android:text="TextView"
         android:textColor="@android:color/black"
         android:textSize="30sp"
+        android:layout_marginLeft="10dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         tools:text="CSGOATSE" />
@@ -29,80 +41,270 @@
         android:id="@+id/textView2"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="28dp"
-        android:layout_marginTop="88dp"
         android:text="Сайт:"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        app:layout_constraintTop_toTopOf="parent"
+        android:layout_marginStart="16dp" />
 
-    <EditText
-        android:id="@+id/editText"
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+        <EditText
+            android:id="@+id/editText_site_link"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:inputType="none"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="https://csgoatse.com" />
+
+        <Button
+            android:id="@+id/copy_btn_site_name"
+            style="@android:style/Widget.Holo.Button.Borderless"
+            android:layout_width="28dp"
+            android:layout_marginRight="8dp"
+            android:layout_height="29dp"
+            android:background="?android:attr/actionModeCopyDrawable"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/openinbrowser"
+            style="@android:style/Widget.Holo.Button.Borderless"
+            android:layout_width="28dp"
+
+            android:layout_marginRight="8dp"
+            android:layout_height="29dp"
+            android:background="@drawable/ico_browser"
+            android:onClick="openinbrowser"
+            android:layout_marginEnd="8dp" />
+
+
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/textView3"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginLeft="28dp"
-        android:layout_marginTop="108dp"
-        android:ems="10"
-        android:inputType="none"
+        android:text="Наш код:"
+        android:layout_marginTop="8dp"
+        android:layout_marginLeft="16dp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        tools:text="sasad"/>
+        android:layout_marginStart="16dp" />
 
-    <Button
-        android:id="@+id/copy_btn"
-        style="@android:style/Widget.Holo.Button.Borderless"
-        android:layout_width="28dp"
-        android:layout_height="29dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="108dp"
-        android:background="?android:attr/actionModeCopyDrawable"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.045"
-        app:layout_constraintStart_toEndOf="@+id/editText"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/openinbrowser"
-        style="@android:style/Widget.Holo.Button.Borderless"
-        android:layout_width="28dp"
-        android:layout_height="29dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="108dp"
-        android:background="@drawable/ico_browser"
-        android:onClick="openinbrowser"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintHorizontal_bias="0.676"
-        app:layout_constraintStart_toEndOf="@+id/editText"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:ignore="MissingConstraints" />
+
+        <EditText
+            android:id="@+id/editText_ref_code"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:ems="10"
+            android:textColor="@color/red_color"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:inputType="none"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="HARDSKINS"
+            />
+
+        <Button
+            android:id="@+id/copy_btn_ref_code"
+            style="@android:style/Widget.Holo.Button.Borderless"
+            android:layout_width="28dp"
+            android:layout_marginRight="8dp"
+            android:layout_height="29dp"
+            android:background="?android:attr/actionModeCopyDrawable"
+            android:layout_marginEnd="8dp" />
+
+        <Button
+            android:id="@+id/openinbrowser_ref_link"
+            style="@android:style/Widget.Holo.Button.Borderless"
+            android:layout_width="28dp"
+            android:layout_marginRight="8dp"
+            android:layout_height="29dp"
+            android:background="@drawable/ico_browser"
+            android:onClick="openinbrowser"
+            android:layout_marginEnd="8dp"
+            android:clickable="false" />
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Бонус за ввод промокода:"
+        android:textColor="@android:color/black"
+        android:layout_marginLeft="16dp"
+        android:layout_marginStart="16dp" />
+
+        <TextView
+            android:id="@+id/ref_bonus_count_text"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp"
+            tools:text="1$"/>
+
+    </LinearLayout>
+
+
+
+
+
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:text="Информация про сайт:"
+        android:layout_marginTop="16dp"
+        android:layout_marginLeft="16dp"
+        android:layout_marginBottom="-8dp"
+        android:layout_marginStart="16dp" />
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
+
+
+
+    <TableLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginTop="8dp"
+        android:layout_marginStart="16dp">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent" >
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Ежедневный бонус:"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp" />
+        </TableRow>
+
+
+
+        <TableRow
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" >
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="Время бонуса:"
+                android:textColor="@android:color/black"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginStart="16dp" />
+        </TableRow>
+
+
+        <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent" >
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:text="Количество бонусов:"
+            android:layout_marginTop="16dp"
+            android:textColor="@android:color/black"
+            android:layout_marginLeft="16dp"
+            android:layout_marginStart="16dp" />
+    </TableRow>
+
+    </TableLayout>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp"
+            android:layout_marginStart="16dp">
+
+            <TableRow>
+                <TextView
+                    android:id="@+id/is_daily_bonus"
+                    android:textColor="@android:color/black"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
+                    tools:text="есть"/>
+
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    android:id="@+id/daily_bonus_time"
+                    android:textColor="@android:color/black"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
+                    tools:text="1 час"/>
+
+            </TableRow>
+
+            <TableRow>
+                <TextView
+                    android:id="@+id/daily_bonus_count"
+                    android:textColor="@android:color/black"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginStart="16dp"
+                    tools:text="0,03$"/>
+
+            </TableRow>
+        </TableLayout>
+    </LinearLayout>
+
 
     <ImageView
         android:id="@+id/imageView"
         android:layout_width="311dp"
         android:layout_height="294dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="8dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginTop="50dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText" />
+        app:layout_constraintTop_toBottomOf="@+id/editText_site_link" />
 
-    <Button
-        android:id="@+id/close_button"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="43dp"
-        android:layout_height="43dp"
-        android:layout_marginStart="8dp"
-        android:layout_marginTop="8dp"
-        android:background="?attr/actionModeCloseDrawable"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:onClick="closeActivity"
-        android:layout_marginLeft="8dp" />
 
-</android.support.constraint.ConstraintLayout>
+
+
+
+
+
+</LinearLayout>
 </ScrollView>

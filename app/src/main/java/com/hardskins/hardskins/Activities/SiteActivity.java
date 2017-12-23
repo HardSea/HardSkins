@@ -31,35 +31,24 @@ public class SiteActivity extends AppCompatActivity {
 
     private Site mySite;
     public CheckBox dontShowAgain;
+    final Context context = this;
 
     @SuppressLint("SetTextI18n")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_site);
-        final Context context = this;
         Intent intent = getIntent();
         final int position = intent.getIntExtra("position", 0);
 
         mySite = MainActivity.mSites.get(position);
 
-        TextView nameSite = findViewById(R.id.info_site_name);
-        nameSite.setText(mySite.getName());
 
-        final EditText editTextSite = findViewById(R.id.editText);
-        editTextSite.setText(mySite.getAddress());
-        editTextSite.setKeyListener(null);
-        editTextSite.setOnLongClickListener(new View.OnLongClickListener() {
-            @Override
-            public boolean onLongClick(View view) {
-                ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("Copied", editTextSite.getText().toString());
-                assert cm != null;
-                cm.setPrimaryClip(clip);
-                Toast.makeText(context, "Адрес сайта скопирован в буфер обмена", Toast.LENGTH_SHORT).show();
-                return true;
-            }
-        });
+
+        initializeTextView();
+
+        initializeEditText();
+
 
         ImageView imageView = findViewById(R.id.imageView);
         Picasso mPicasso = Picasso.with(this);
@@ -67,26 +56,91 @@ public class SiteActivity extends AppCompatActivity {
         mPicasso.load(mySite.getSite_photo_url()).into(imageView);
 
 
-        Button copyBtn = findViewById(R.id.copy_btn);
-        copyBtn.setOnClickListener(new View.OnClickListener() {
+
+
+
+
+
+
+
+
+
+
+    }
+
+    private void initializeEditText() {
+
+        final EditText edit_text_site_link = findViewById(R.id.editText_site_link);
+        edit_text_site_link.setText(mySite.getAddress());
+        edit_text_site_link.setKeyListener(null);
+        edit_text_site_link.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("Copied", edit_text_site_link.getText().toString());
+                assert cm != null;
+                cm.setPrimaryClip(clip);
+                Toast.makeText(context, "Адрес сайта скопирован в буфер обмена", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
+
+        final EditText edit_text_ref_code = findViewById(R.id.editText_ref_code);
+        edit_text_ref_code.setText(mySite.getSite_ref_code());
+        edit_text_ref_code.setKeyListener(null);
+        edit_text_ref_code.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View view) {
+                ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("Copied", edit_text_ref_code.getText().toString());
+                assert cm != null;
+                cm.setPrimaryClip(clip);
+                Toast.makeText(context, "Адрес сайта скопирован в буфер обмена", Toast.LENGTH_SHORT).show();
+                return true;
+            }
+        });
+
+        Button copyBtn_site_name = findViewById(R.id.copy_btn_site_name);
+        copyBtn_site_name.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
-                ClipData clip = ClipData.newPlainText("Copied", editTextSite.getText().toString());
+                ClipData clip = ClipData.newPlainText("Copied", edit_text_site_link.getText().toString());
                 assert cm != null;
                 cm.setPrimaryClip(clip);
                 Toast.makeText(context, "Адрес сайта скопирован в буфер обмена", Toast.LENGTH_SHORT).show();
             }
         });
 
+        Button copyBtn_ref_code = findViewById(R.id.copy_btn_ref_code);
+        copyBtn_ref_code.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ClipboardManager cm = (ClipboardManager) getSystemService(Context.CLIPBOARD_SERVICE);
+                ClipData clip = ClipData.newPlainText("Copied", edit_text_ref_code.getText().toString());
+                assert cm != null;
+                cm.setPrimaryClip(clip);
+                Toast.makeText(context, "Бонус для сайта скопирован в буфер обмена", Toast.LENGTH_SHORT).show();
+            }
+        });
+    }
+
+    private void initializeTextView(){
+        TextView nameSite = findViewById(R.id.info_site_name);
+        nameSite.setText(mySite.getName());
 
 
+        TextView ref_bonus_count_text = findViewById(R.id.ref_bonus_count_text);
+        ref_bonus_count_text.setText(mySite.getSite_free_bonus_reg_count() + "$");
 
+        TextView is_daily_bonus = findViewById(R.id.is_daily_bonus);
+        is_daily_bonus.setText(mySite.getSite_free_bonus_hour());
 
+        TextView daily_bonus_time = findViewById(R.id.daily_bonus_time);
+        daily_bonus_time.setText(mySite.getSite_free_bonus_hour_time_text());
 
-
-
-
+        TextView daily_bonus_count = findViewById(R.id.daily_bonus_count);
+        daily_bonus_count.setText(mySite.getSite_free_bonus_hour_count());
     }
 
 

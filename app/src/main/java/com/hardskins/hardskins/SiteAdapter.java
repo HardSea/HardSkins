@@ -73,7 +73,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
                         Site tempSite = sites.get(tempPosition);
                         if (b) {
                             if (!isContinue) {
-                                long timeBonusBySite = Long.parseLong(tempSite.getSite_free_bonus_hour_time());
+                                long timeBonusBySite = tempSite.getSite_free_bonus_hour_time();
                                 Date date = new Date();
                                 long timeStartTimer = date.getTime();
                                 long timeEndTimer = timeStartTimer + timeBonusBySite;
@@ -216,7 +216,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
                 Log.d("HardSkins", "Long tap on linear layout!");
                 switchNotify.setChecked(true);
                 Site tempSite = sites.get(getIndexByName(String.valueOf(sitename.getText())));
-                switchOn(Long.parseLong(tempSite.getSite_free_bonus_hour_time()));
+                switchOn(tempSite.getSite_free_bonus_hour_time());
                 Toast.makeText(context, "Уведомления включено", Toast.LENGTH_SHORT).show();
                 return true;
             }

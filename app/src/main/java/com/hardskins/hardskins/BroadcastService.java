@@ -61,9 +61,16 @@ public class BroadcastService extends Service {
             Log.d(TAG, "Count service = " + cnt_service);
         } else if ("SERVICE_STOP".equals(intent.getAction())) {
             String nameSite = intent.getStringExtra("nameSite");
-            mTimers.get(getIndexByname(nameSite)).stopTimer();
-            mTimers.remove(getIndexByname(nameSite));
-            cnt_service--;
+            try{
+                mTimers.get(getIndexByname(nameSite)).stopTimer();
+                mTimers.remove(getIndexByname(nameSite));
+                cnt_service--;
+            } catch(java.lang.ArrayIndexOutOfBoundsException e){
+                Log.d(TAG, "Not exist timer has been off");
+            }
+
+
+
             Log.d(TAG, "Calling onStop command");
             Log.d(TAG, "Count service = " + cnt_service);
 
