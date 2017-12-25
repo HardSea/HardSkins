@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.drawable.AnimationDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
@@ -18,6 +19,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -55,7 +57,12 @@ public class SiteActivity extends AppCompatActivity {
 
         mPicasso.load(mySite.getSite_photo_url()).into(imageView);
 
+        ScrollView scrollView = findViewById(R.id.scroll);
 
+        AnimationDrawable animationDrawable = (AnimationDrawable) scrollView.getBackground();
+        animationDrawable.setEnterFadeDuration(4000);
+        animationDrawable.setExitFadeDuration(10000);
+        animationDrawable.start();
 
 
 
