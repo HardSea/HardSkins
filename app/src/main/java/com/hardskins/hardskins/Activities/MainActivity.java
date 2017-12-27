@@ -36,7 +36,6 @@ import com.google.firebase.database.ValueEventListener;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.hardskins.hardskins.BroadcastService;
-import com.hardskins.hardskins.Global;
 import com.hardskins.hardskins.R;
 import com.hardskins.hardskins.Site;
 import com.hardskins.hardskins.SiteAdapter;
@@ -77,6 +76,18 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         isFirstRun = appSharedPrefs.getBoolean("FIRSTRUN", true);
 
         firstrun(); // check on first run and initializedata
+
+
+
+
+
+        Date dateNow = new Date();
+        long timeNow = dateNow.getTime();
+        SharedPreferences appshared = PreferenceManager.getDefaultSharedPreferences(this);
+        SharedPreferences.Editor editor = appshared.edit();
+        editor.putLong("LastOpenTime", timeNow);
+        editor.apply();
+
 
         createNavigationMenu();
         cnt_timer = appSharedPrefs.getInt("count timer", 0);
@@ -262,7 +273,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
-                    Toast.makeText(Global.getAppContext(), "Неудалось обновить базу данных.\n Попробуйте позже", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "Неудалось обновить базу данных.\n Попробуйте позже", Toast.LENGTH_SHORT).show();
                     Log.d("HardSkins", "Failed to read value", databaseError.toException());
                 }
             });
@@ -364,19 +375,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         // Handle navigation view item clicks here.
         int id = item.getItemId();
 
-        if (id == R.id.nav_camera) {
+        if (id == R.id.nav_help) {
             // Handle the camera action
-        } else if (id == R.id.nav_gallery) {
-
-        } else if (id == R.id.nav_slideshow) {
-
-        } else if (id == R.id.nav_manage) {
+        } else if (id == R.id.nav_settings) {
             startSettings();
-        } else if (id == R.id.nav_share) {
 
-        } else if (id == R.id.nav_send) {
 
+        } else if (id == R.id.nav_rateus) {
+
+        } else if (id == R.id.nav_aboutus) {
+            Intent intent = new Intent(context, AboutusActivity.class);
+            startActivity(intent);
         }
+
+        //TODO:create "clicable listener"
 
         DrawerLayout drawer = findViewById(R.id.drawer_layout);
         drawer.closeDrawer(GravityCompat.START);

@@ -25,7 +25,7 @@
         android:layout_width="43dp"
         android:layout_height="43dp"
         android:layout_margin="10dp"
-        android:background="?attr/actionModeCloseDrawable"
+        android:background="@drawable/ico_back"
         android:onClick="closeActivity" />
 
     <TextView
@@ -74,7 +74,7 @@
             android:layout_width="28dp"
             android:layout_marginRight="8dp"
             android:layout_height="29dp"
-            android:background="?android:attr/actionModeCopyDrawable"
+            android:background="@drawable/ico_copy"
             android:layout_marginEnd="8dp" />
 
         <Button
@@ -128,7 +128,7 @@
             android:layout_width="28dp"
             android:layout_marginRight="8dp"
             android:layout_height="29dp"
-            android:background="?android:attr/actionModeCopyDrawable"
+            android:background="@drawable/ico_copy"
             android:layout_marginEnd="8dp" />
 
         <Button

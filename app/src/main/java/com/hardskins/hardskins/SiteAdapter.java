@@ -60,9 +60,9 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
 
         SiteHolder(View itemView, TimerStarter timerStarter) {
             super(itemView);
-            cardView = itemView.findViewById(R.id.cardView);
-            sitename = itemView.findViewById(R.id.site_name);
-            sitePhoto = itemView.findViewById(R.id.site_photo);
+            cardView =  itemView.findViewById(R.id.cardView);
+            sitename =  itemView.findViewById(R.id.site_name);
+            sitePhoto =  itemView.findViewById(R.id.site_photo);
             switchNotify = itemView.findViewById(R.id.notificationSwitcher);
             textDate = itemView.findViewById(R.id.textDate);
             linearCard = itemView.findViewById(R.id.linearCard);

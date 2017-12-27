@@ -50,7 +50,12 @@ public class SettingsActivity extends AppCompatPreferenceActivity{
                         break;
                     case "vibration_time":
                         Log.d("HardSkins", "select vibration time");
-                        editor.putInt("Time of vibrate", Integer.parseInt(stringValue));
+                        try{
+                            editor.putInt("Time of vibrate", Integer.parseInt(stringValue));
+
+                        }catch(NumberFormatException ex){
+
+                        }
                         editor.apply();
                         int indexTime = prefs.getInt("Time of vibrate", 1);
 
