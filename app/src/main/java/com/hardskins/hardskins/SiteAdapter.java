@@ -42,11 +42,14 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
     private SharedPreferences.Editor prefsEditor;
     private TimerStarter firstStarter;
     private boolean onBind;
+    private static int numOfBindOnElements;
+
 
 
     class SiteHolder extends RecyclerView.ViewHolder implements View.OnClickListener, View.OnLongClickListener {
         private CardView cardView;
         private TextView sitename;
+        private LinearLayout linearLayoutComplete;
         private ImageView sitePhoto;
         SwitchCompat switchNotify;
         private TextView textDate;
@@ -56,10 +59,12 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
         private String locale = "%02d:%02d:%02d";
         private boolean isContinue = false;
         private Button openinbrowser_card;
+        private Button buildOnBtn;
 
 
         SiteHolder(View itemView, TimerStarter timerStarter) {
             super(itemView);
+            linearLayoutComplete = itemView.findViewById(R.id.linearcompletecard);
             cardView =  itemView.findViewById(R.id.cardView);
             sitename =  itemView.findViewById(R.id.site_name);
             sitePhoto =  itemView.findViewById(R.id.site_photo);
@@ -70,7 +75,45 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
             linearCard.setOnLongClickListener(this);
             secondStarter = timerStarter;
             openinbrowser_card = itemView.findViewById(R.id.openinbrowser_card);
+            buildOnBtn = itemView.findViewById(R.id.buildOnElement_card);
 
+            appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+            numOfBindOnElements = appSharedPrefs.getInt("numofbindonelements", 0 );
+
+
+            buildOnBtn.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+                    prefsEditor = appSharedPrefs.edit();
+                    boolean buildon = appSharedPrefs.getBoolean(sitename.getText() + "buildon", false);
+                    if (buildon){
+                        numOfBindOnElements--;
+                        notifyItemMoved(getAdapterPosition(), numOfBindOnElements);
+                        buildOnBtn.setBackground(context.getResources().getDrawable(R.drawable.ico_start_no));
+                        prefsEditor.putBoolean(sitename.getText() + "buildon", false);
+                        prefsEditor.putInt("numofbindonelements", numOfBindOnElements);
+                        prefsEditor.apply();
+                        Site tempSite = MainActivity.mSites.remove(getIndexByName(String.valueOf(sitename.getText())));
+                        MainActivity.mSites.add(numOfBindOnElements, tempSite);
+
+
+                    } else {
+                        numOfBindOnElements++;
+                        notifyItemMoved(getAdapterPosition(), 0);
+                        buildOnBtn.setBackground(context.getResources().getDrawable(R.drawable.ico_start_yes));
+                        prefsEditor.putBoolean(sitename.getText() + "buildon", true);
+                        prefsEditor.putInt("numofbindonelements", numOfBindOnElements);
+                        prefsEditor.apply();
+                        Site tempSite = MainActivity.mSites.remove(getIndexByName(String.valueOf(sitename.getText())));
+                        MainActivity.mSites.add(0, tempSite);
+
+
+
+
+                    }
+                }
+            });
 
 
             switchNotify.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
@@ -95,6 +138,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
                                 secondStarter.startServiceTimer(tempPosition, timeBonusBySite);
                             }
                         } else {
+                            linearLayoutComplete.setBackgroundColor(-1);
                             isContinue = false;
                             switchOff();
                             t.cancel();
@@ -236,6 +280,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
                 public void onFinish() {
                     textDate.setText(R.string.zerozerozerozerozerozero);
                     Toast.makeText(context, "Finish", Toast.LENGTH_SHORT).show();
+                    linearLayoutComplete.setBackgroundColor(-16711936);
                     cancel();
                 }
             }.start();
@@ -348,6 +393,14 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
         appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
         prefsEditor = appSharedPrefs.edit();
 
+        boolean buildon = appSharedPrefs.getBoolean(siteHolder.sitename.getText() + "buildon", false);
+        if (!buildon){
+            siteHolder.buildOnBtn.setBackground(context.getResources().getDrawable(R.drawable.ico_start_no));
+        } else{
+            siteHolder.buildOnBtn.setBackground(context.getResources().getDrawable(R.drawable.ico_start_yes));
+
+        }
+
 
         if (appSharedPrefs.getBoolean("new elements", false)) {
             prefsEditor.putBoolean(String.valueOf(siteHolder.sitename.getText()) + "site is notify", false);
@@ -388,6 +441,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
         SiteAdapter.sites = sites;
         this.context = context;
         firstStarter = timerStarter;
+
 
     }
 

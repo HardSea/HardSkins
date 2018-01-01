@@ -19,25 +19,36 @@
 
     tools:context="com.hardskins.hardskins.Activities.SiteActivity">
 
-    <Button
-        android:id="@+id/close_button"
-        style="@style/Widget.AppCompat.Button.Borderless"
-        android:layout_width="43dp"
-        android:layout_height="43dp"
-        android:layout_margin="10dp"
-        android:background="@drawable/ico_back"
-        android:onClick="closeActivity" />
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal">
 
-    <TextView
-        android:id="@+id/info_site_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:textColor="@android:color/black"
-        android:textSize="30sp"
-        android:layout_marginLeft="10dp"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        tools:text="CSGOATSE" />
+        <Button
+            android:id="@+id/close_button"
+            style="@style/Widget.AppCompat.Button.Borderless"
+            android:layout_width="30dp"
+            android:layout_height="30dp"
+            android:layout_margin="10dp"
+            android:background="@drawable/ico_back"
+            android:onClick="closeActivity" />
+
+        <TextView
+            android:id="@+id/info_site_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textColor="@android:color/black"
+            android:textSize="30sp"
+            android:layout_marginTop="16dp"
+            app:layout_constraintLeft_toLeftOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:text="CSGOATSE" />
+
+
+
+    </LinearLayout>
+
+
 
     <TextView
         android:id="@+id/textView2"
@@ -151,6 +162,7 @@
         android:orientation="horizontal">
 
     <TextView
+        android:id="@+id/text_for_promo"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="Бонус за ввод промокода:"
@@ -289,22 +301,6 @@
             </TableRow>
         </TableLayout>
     </LinearLayout>
-
-
-    <ImageView
-        android:id="@+id/imageView"
-        android:layout_width="311dp"
-        android:layout_height="294dp"
-        android:layout_marginTop="50dp"
-        app:layout_constraintBottom_toBottomOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/editText_site_link" />
-
-
-
-
-
 
 
 </LinearLayout>

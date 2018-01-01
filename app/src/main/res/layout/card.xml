@@ -33,7 +33,7 @@
                 android:id="@+id/site_name"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:textSize="30sp"
+                android:textSize="27sp"
                 tools:text="sdfsd" />
 
             <RelativeLayout
@@ -44,12 +44,28 @@
                     android:id="@+id/openinbrowser_card"
                     style="@android:style/Widget.Holo.Button.Borderless"
 
+
+                    android:layout_width="28dp"
+                    android:layout_height="29dp"
+
+                    android:layout_alignParentBottom="true"
+                    android:layout_marginEnd="12dp"
+
+                    android:layout_marginRight="12dp"
+                    android:layout_toLeftOf="@+id/buildOnElement_card"
+                    android:layout_toStartOf="@+id/buildOnElement_card"
+                    android:background="@drawable/ico_browser" />
+
+                <Button
+                    android:id="@+id/buildOnElement_card"
+                    style="@android:style/Widget.Holo.Button.Borderless"
+
                     android:layout_width="28dp"
                     android:layout_height="29dp"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentEnd="true"
                     android:layout_alignParentRight="true"
-                    android:background="@drawable/ico_browser" />
+                    android:background="@drawable/ico_start_no" />
             </RelativeLayout>
 
         </LinearLayout>
@@ -57,6 +73,7 @@
 
 
         <LinearLayout
+            android:id="@+id/linearcompletecard"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:orientation="horizontal">

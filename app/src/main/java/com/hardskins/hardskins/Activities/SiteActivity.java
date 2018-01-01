@@ -18,14 +18,12 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.hardskins.hardskins.R;
 import com.hardskins.hardskins.Site;
-import com.squareup.picasso.Picasso;
 
 public class SiteActivity extends AppCompatActivity {
 
@@ -52,10 +50,7 @@ public class SiteActivity extends AppCompatActivity {
         initializeEditText();
 
 
-        ImageView imageView = findViewById(R.id.imageView);
-        Picasso mPicasso = Picasso.with(this);
 
-        mPicasso.load(mySite.getSite_photo_url()).into(imageView);
 
         ScrollView scrollView = findViewById(R.id.scroll);
 
@@ -93,7 +88,13 @@ public class SiteActivity extends AppCompatActivity {
         });
 
         final EditText edit_text_ref_code = findViewById(R.id.editText_ref_code);
-        edit_text_ref_code.setText(mySite.getSite_ref_code());
+        if (mySite.getSite_ref_code().equals("")){
+            edit_text_ref_code.setText(mySite.getSite_ref_link());
+
+        }else{
+            edit_text_ref_code.setText(mySite.getSite_ref_code());
+        }
+
         edit_text_ref_code.setKeyListener(null);
         edit_text_ref_code.setOnLongClickListener(new View.OnLongClickListener() {
             @Override
@@ -106,6 +107,8 @@ public class SiteActivity extends AppCompatActivity {
                 return true;
             }
         });
+
+
 
         Button copyBtn_site_name = findViewById(R.id.copy_btn_site_name);
         copyBtn_site_name.setOnClickListener(new View.OnClickListener() {
@@ -148,6 +151,12 @@ public class SiteActivity extends AppCompatActivity {
 
         TextView daily_bonus_count = findViewById(R.id.daily_bonus_count);
         daily_bonus_count.setText(mySite.getSite_free_bonus_hour_count());
+
+        TextView bonus_for_reg = findViewById(R.id.text_for_promo);
+        if (mySite.getSite_ref_code().equals("")){
+            bonus_for_reg.setText("Бонус за регистрацию по ссылке: ");
+
+        }
     }
 
 
