@@ -179,7 +179,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
                             editor.putString("skipMessage", checkBoxResult);
                             editor.apply();
 
-                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(MainActivity.mSites.get(getIndexByName(String.valueOf(sitename.getText()))).getSite_address()));
+                            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(MainActivity.mSites.get(getIndexByName(String.valueOf(sitename.getText()))).getSite_free_bonus_link()));
 
                             context.startActivity(browserIntent);
 

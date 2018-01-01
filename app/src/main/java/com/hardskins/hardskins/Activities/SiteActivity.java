@@ -152,6 +152,13 @@ public class SiteActivity extends AppCompatActivity {
         TextView daily_bonus_count = findViewById(R.id.daily_bonus_count);
         daily_bonus_count.setText(mySite.getSite_free_bonus_hour_count());
 
+        TextView withdraw_dep = findViewById(R.id.withdraw_dep);
+        if (mySite.getSite_need_dep()){
+            withdraw_dep.setText(R.string.text_yes);
+        } else {
+            withdraw_dep.setText(R.string.text_no);
+        }
+
         TextView bonus_for_reg = findViewById(R.id.text_for_promo);
         if (mySite.getSite_ref_code().equals("")){
             bonus_for_reg.setText("Бонус за регистрацию по ссылке: ");
