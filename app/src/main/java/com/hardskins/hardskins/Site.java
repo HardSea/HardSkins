@@ -14,7 +14,7 @@ public class Site{
     private String site_ref_code;
     private String site_ref_link;
     private String site_free_bonus_hour_time_text;
-    private String site_need_dep;
+    private String site_no_need_dep;
 
 
 
@@ -196,12 +196,12 @@ public class Site{
         return site_free_bonus_hour_time;
     }
 
-    public boolean getSite_need_dep() {
-        return site_need_dep.equals("Yes");
+    public boolean getSite_no_need_dep() {
+        return site_no_need_dep.equals("Yes");
 
     }
 
-    public void setSite_need_dep(String site_need_dep) {
-        this.site_need_dep = site_need_dep;
+    public void setSite_no_need_dep(String site_no_need_dep) {
+        this.site_no_need_dep = site_no_need_dep;
     }
 }

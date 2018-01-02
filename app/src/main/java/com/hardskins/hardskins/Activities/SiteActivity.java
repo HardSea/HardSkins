@@ -153,7 +153,7 @@ public class SiteActivity extends AppCompatActivity {
         daily_bonus_count.setText(mySite.getSite_free_bonus_hour_count());
 
         TextView withdraw_dep = findViewById(R.id.withdraw_dep);
-        if (mySite.getSite_need_dep()){
+        if (mySite.getSite_no_need_dep()){
             withdraw_dep.setText(R.string.text_yes);
         } else {
             withdraw_dep.setText(R.string.text_no);

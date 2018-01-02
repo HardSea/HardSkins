@@ -10,8 +10,13 @@
 
     <header
         android:fragment="com.hardskins.hardskins.Activities.SettingsActivity$GeneralPreferenceFragment"
-        android:icon="@drawable/ic_info_black_24dp"
-        android:title="@string/pref_header_general" />
+        android:icon="@drawable/ico_notify"
+        android:title="@string/pref_header_notification" />
+
+    <header
+        android:fragment="com.hardskins.hardskins.Activities.SettingsActivity$DesignPreferenceFragment"
+        android:icon="@drawable/ico_design"
+        android:title="@string/pref_header_interface" />
 
 
 </preference-headers>

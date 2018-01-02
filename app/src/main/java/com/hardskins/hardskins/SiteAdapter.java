@@ -363,7 +363,9 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
 
     @Override
     public int getItemCount() {
-        return sites.size();
+
+            return sites.size();
+
     }
 
     @Override
@@ -375,11 +377,16 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
 
     @Override
     public void onBindViewHolder(final SiteHolder siteHolder, final int position) {
-
+        appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+        prefsEditor = appSharedPrefs.edit();
         siteHolder.sitename.setText(sites.get(position).getSite_name());
-        Picasso.with(context)
-                .load(sites.get(position).getSite_photo_url())
-                .into(siteHolder.sitePhoto);
+
+        if (appSharedPrefs.getBoolean("load_pictures", true)){
+            Picasso.with(context)
+                    .load(sites.get(position).getSite_photo_url())
+                    .into(siteHolder.sitePhoto);
+        }
+
 
 
         if (sites.size() <= 3) {
@@ -390,8 +397,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
         }
 
         onBind = true;
-        appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
-        prefsEditor = appSharedPrefs.edit();
+
 
         boolean buildon = appSharedPrefs.getBoolean(siteHolder.sitename.getText() + "buildon", false);
         if (!buildon){

@@ -218,7 +218,11 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         Type type = new TypeToken<ArrayList<Site>>(){}.getType();
         mSites = gson.fromJson(json, type);
 
-        Log.d(TAG, "Size of loading array = " + mSites.size());
+        try{
+            Log.d(TAG, "Size of loading array = " + mSites.size());
+        } catch (java.lang.NullPointerException e){
+            mSites.add(new Site("Error"));
+        }
     } //load saved data from sharedpreference
 
     private void createNavigationMenu(){

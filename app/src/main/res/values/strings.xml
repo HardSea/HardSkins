@@ -21,7 +21,8 @@
     <!-- Strings related to Settings -->
 
     <!-- Example General settings -->
-    <string name="pref_header_general">General</string>
+    <string name="pref_header_notification">Уведомление</string>
+    <string name="pref_header_interface">Интерфейс</string>
 
     <string name="pref_title_social_recommendations">Enable social recommendations</string>
     <string name="pref_description_social_recommendations">Recommendations for people to contact
@@ -108,4 +109,5 @@
     <string name="title_activity_settings">Settings</string>
     <string name="starttimertimer">StartTimerTime</string>
     <string name="zerozerozerozerozerozero">00:00:00</string>
+    <string name="preference_load_pictures_text">Загружать изображения</string>
 </resources>

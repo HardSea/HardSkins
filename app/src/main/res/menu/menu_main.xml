@@ -6,7 +6,7 @@
         android:id="@+id/refresh_recyclerview"
         app:showAsAction="ifRoom"
         android:title=""
-        android:icon="@drawable/ic_sync_black_24dp"/>
+        android:icon="@drawable/ic_sync_white"/>
 
     <item
         android:id="@+id/action_setting_button"
