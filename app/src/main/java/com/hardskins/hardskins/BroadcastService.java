@@ -1,6 +1,7 @@
 package com.hardskins.hardskins;
 
 
+import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -33,6 +34,10 @@ public class BroadcastService extends Service {
     private SharedPreferences.Editor prefsEditor;
     private Context context = this;
     private int position;
+    private long timeService;
+    private String nameTimerService;
+    private AlarmManager myAlarmService;
+    private PendingIntent restartPendingIntent;
 
 
     @Override
@@ -47,11 +52,11 @@ public class BroadcastService extends Service {
 
 
         if ("SERVICE_START".equals(intent.getAction())) {
-
             long time = (intent.getLongExtra("time", 0));
             String currentTimer = intent.getStringExtra("nameSite");
             position = getIndexBynameSite(currentTimer);
-
+            timeService = time;
+            nameTimerService = currentTimer;
             Timer timer = new Timer(time, currentTimer);
             timer.startTimer();
             mTimers.add(timer);
@@ -79,6 +84,9 @@ public class BroadcastService extends Service {
             String currentTimer = intent.getStringExtra("nameSite");
             position = getIndexBynameSite(currentTimer);
 
+            timeService = time;
+            nameTimerService = currentTimer;
+
             Timer timer = new Timer(time, currentTimer);
             timer.startTimer();
             mTimers.add(timer);
@@ -89,10 +97,31 @@ public class BroadcastService extends Service {
         }
 
 
-        return START_REDELIVER_INTENT;
+        return START_STICKY;
 
 
     }
+
+//    @Override
+//    public void onTaskRemoved(Intent rootIntent) {
+//        for (int i = 0; i < mTimers.size(); i++) {
+//            Intent restartServiceTask = new Intent(getApplicationContext(),this.getClass());
+//            restartServiceTask.putExtra("time", mTimers.get(i).getTimeServiceTime());
+//            restartServiceTask.putExtra("nameSite", mTimers.get(i).getNameTimer());
+//            restartServiceTask.setAction("SERVICE_CONTINUE");
+//            restartServiceTask.setPackage(getPackageName());
+//            restartPendingIntent = PendingIntent.getService(getApplicationContext(), 1,restartServiceTask, PendingIntent.FLAG_ONE_SHOT);
+//            myAlarmService = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
+//            assert myAlarmService != null;
+//            myAlarmService.set(
+//                    AlarmManager.ELAPSED_REALTIME,
+//                    SystemClock.elapsedRealtime() + 1000,
+//                    restartPendingIntent);
+//        }
+//
+//
+//        super.onTaskRemoved(rootIntent);
+//    }
 
     private int getIndexBynameSite(String pName) {
         for (Site _item : MainActivity.mSites) {
@@ -116,9 +145,15 @@ public class BroadcastService extends Service {
     }
 
     class Timer extends Vibration {
-        private String nameTimer;
+        String nameTimer;
         private CountDownTimer timer;
-        private long time;
+        protected long time;
+        long timeServiceTime;
+
+        long getTimeServiceTime(){
+            return timeServiceTime;
+        }
+
 
 
         Timer(long t, String name) {
@@ -135,11 +170,18 @@ public class BroadcastService extends Service {
                 @Override
                 public void onTick(long l) {
                     Log.d("BroadcastService", nameTimer + " countdown timer seconds reamaning: " + l / 1000);
+                    timeServiceTime = l;
                 }
 
                 @Override
                 public void onFinish() {
                     String nameSite = nameTimer;
+//                    try {
+//                        myAlarmService.cancel(restartPendingIntent);
+//
+//                    } catch (NullPointerException e){
+//                        Log.d("BroadcastService", "Error Finish");
+//                    }
 
                     Intent resultIntent = new Intent(BroadcastService.this, MainActivity.class);
                     TaskStackBuilder stackBuilder = TaskStackBuilder.create(BroadcastService.this);

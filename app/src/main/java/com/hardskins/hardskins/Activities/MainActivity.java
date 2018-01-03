@@ -2,9 +2,11 @@ package com.hardskins.hardskins.Activities;
 
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
@@ -72,8 +74,15 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         mainActivity = this;
         context = this;
         appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(this);
-
+        SharedPreferences.Editor editor1 = appSharedPrefs.edit();
         isFirstRun = appSharedPrefs.getBoolean("FIRSTRUN", true);
+        if (appSharedPrefs.getBoolean("FIRSTFIRSTRUNAPP", true)){
+            Intent intent = new Intent(context, HelpActivity.class);
+            startActivity(intent);
+            editor1.putBoolean("FIRSTFIRSTRUNAPP", false);
+            editor1.apply();
+
+        }
 
         firstrun(); // check on first run and initializedata
 
@@ -119,9 +128,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
                 .setAction("SERVICE_START"));
 
 
-
-
-
         Log.d("BroadcastService", "Started service");
     }
 
@@ -137,6 +143,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         long timeEndTimer = appSharedPrefs.getLong(nameSite + "time end timer", 0);
         long setTime;
         setTime = timeEndTimer - nowtime;
+
+
 
         startService(new Intent(this, BroadcastService.class)
                 .putExtra("time", setTime)
@@ -221,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         try{
             Log.d(TAG, "Size of loading array = " + mSites.size());
         } catch (java.lang.NullPointerException e){
-            mSites.add(new Site("Error"));
+
         }
     } //load saved data from sharedpreference
 
@@ -380,13 +388,19 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         int id = item.getItemId();
 
         if (id == R.id.nav_help) {
-            // Handle the camera action
+            Intent intent = new Intent(context, HelpActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_settings) {
             startSettings();
 
 
+        } else if(id == R.id.nav_steam){
+            openSteamApp(context);
         } else if (id == R.id.nav_rateus) {
 
+        } else if(id == R.id.nav_calc){
+            Intent intent = new Intent(context, CalcActivity.class);
+            startActivity(intent);
         } else if (id == R.id.nav_aboutus) {
             Intent intent = new Intent(context, AboutusActivity.class);
             startActivity(intent);
@@ -419,6 +433,20 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     public void startHelp(){
         Intent intent = new Intent(this, HelpActivity.class);
         startActivity(intent);
+    }
+
+    public static void openSteamApp(Context context) {
+        PackageManager manager = context.getPackageManager();
+        try {
+            Intent i = manager.getLaunchIntentForPackage("com.valvesoftware.android.steam.community");
+
+            context.startActivity(i);
+        } catch (ActivityNotFoundException e) {
+            Toast.makeText(context, "Steam не установлен", Toast.LENGTH_SHORT).show();
+        } catch (NullPointerException e){
+            Toast.makeText(context, "Steam не установлен", Toast.LENGTH_SHORT).show();
+
+        }
     }
 
     public void fab_settings(View view) {

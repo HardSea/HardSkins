@@ -146,12 +146,12 @@
             android:id="@+id/openinbrowser_ref_link"
             style="@android:style/Widget.Holo.Button.Borderless"
             android:layout_width="28dp"
-            android:layout_marginRight="8dp"
             android:layout_height="29dp"
-            android:background="@drawable/ico_browser"
-            android:onClick="openinbrowser"
             android:layout_marginEnd="8dp"
-            android:clickable="false" />
+            android:layout_marginRight="8dp"
+            android:background="@drawable/ico_browser"
+            android:clickable="false"
+            android:onClick="openinbrowserRefLink" />
 
 
     </LinearLayout>

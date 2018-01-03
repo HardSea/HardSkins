@@ -15,6 +15,7 @@ public class Site{
     private String site_ref_link;
     private String site_free_bonus_hour_time_text;
     private String site_no_need_dep;
+    private String site_nickName;
 
 
 
@@ -203,5 +204,13 @@ public class Site{
 
     public void setSite_no_need_dep(String site_no_need_dep) {
         this.site_no_need_dep = site_no_need_dep;
+    }
+
+    public String getSite_nickName() {
+        return site_nickName;
+    }
+
+    public void setSite_nickName(String site_nickName) {
+        this.site_nickName = site_nickName;
     }
 }

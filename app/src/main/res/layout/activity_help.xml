@@ -1,6 +1,174 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.constraint.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<ScrollView
+    android:id="@+id/scroll"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
-</android.support.constraint.ConstraintLayout>
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:layout_marginRight="16dp"
+            android:layout_marginEnd="16dp">
+
+            <Button
+                android:id="@+id/close_button"
+                style="@style/Widget.AppCompat.Button.Borderless"
+                android:layout_width="30dp"
+                android:layout_height="30dp"
+                android:layout_margin="10dp"
+                android:background="@drawable/ico_back"
+                android:onClick="closeActivity" />
+
+
+            <TextView
+                android:id="@+id/HelpText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:textColor="#111111"
+                />
+
+
+        </LinearLayout>
+
+
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
+        android:layout_marginTop="8dp"
+
+
+        android:text="Если у вас есть CsGo и вы хотите на ней заработать, то это приложение обязательно вам поможет."
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"/>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+
+            android:orientation="horizontal">
+
+
+            <TextView
+                android:gravity="center"
+                android:layout_width="200dp"
+                android:layout_height="150dp"
+                android:layout_marginLeft="16dp"
+                android:text="На главное странице собраны все сайты на которых присутствуют бонусы или на которых дают бонусы за регистрацию"
+                android:layout_marginStart="16dp" />
+
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="150dp"
+                android:src="@drawable/photo_help_1"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+
+            android:orientation="horizontal">
+
+
+            <TextView
+                android:layout_width="128dp"
+                android:layout_height="150dp"
+                android:layout_marginLeft="16dp"
+                android:gravity="center"
+                android:text="Чтобы включить уведомления необходимо нажать на соответствующий значёк"
+                android:layout_marginStart="16dp" />
+
+            <ImageView
+                android:layout_width="250dp"
+                android:layout_height="250dp"
+                android:src="@drawable/photo_help_2"
+                />
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+
+            android:orientation="horizontal">
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+            <ImageView
+                android:layout_width="150dp"
+                android:layout_height="125dp"
+                android:src="@drawable/photo_help_4"
+                />
+                <ImageView
+                    android:layout_width="150dp"
+                    android:layout_height="125dp"
+                    android:src="@drawable/photo_help_3"
+                    />
+
+            </LinearLayout>
+
+            <TextView
+                android:layout_width="180dp"
+                android:layout_height="250dp"
+                android:layout_marginLeft="16dp"
+                android:gravity="center"
+                android:text="Также, если вы хотите изменить время то вы можете нажать на оставшееся время и указать время которое осталось до конца"
+                android:layout_marginStart="16dp" />
+
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:orientation="horizontal">
+
+            <ImageView
+                android:layout_width="200dp"
+                android:layout_height="250dp"
+                android:src="@drawable/photo_help_5"
+                />
+
+            <TextView
+                android:layout_width="128dp"
+                android:layout_height="150dp"
+                android:layout_marginLeft="16dp"
+                android:gravity="center"
+                android:layout_gravity="center"
+                android:text="`Сменить ник` открывает приложение `Steam` и копирует название сайта которое нужно вставить в свой ник для получения бонуса"
+                android:layout_marginStart="16dp" />
+
+
+        </LinearLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="#111111"
+            android:layout_marginTop="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:layout_marginBottom="32dp"
+
+            android:text="И не забывайте заглядывать в настройки, там вы сможете обновить актуальные данные про сайты"/>
+
+    </LinearLayout>
+</ScrollView>

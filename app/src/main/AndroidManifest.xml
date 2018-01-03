@@ -41,11 +41,16 @@
             android:screenOrientation="portrait" />
         <activity android:name=".Activities.HelpActivity" />
         <activity android:name=".Activities.AboutusActivity"/>
+        <activity android:name=".Activities.CalcActivity"/>
 
         <meta-data
             android:name="preloaded_fonts"
             android:resource="@array/preloaded_fonts" />
-        <service android:name=".BroadcastService" />
+        <service android:name="com.hardskins.hardskins.BroadcastService"
+            android:enabled="true"
+            android:exported="false"
+            android:process=":HardSkinsTimer"
+            android:stopWithTask="false"/>
 
 
 

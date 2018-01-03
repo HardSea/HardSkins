@@ -1,6 +1,8 @@
 package com.hardskins.hardskins;
 
 import android.app.TimePickerDialog;
+import android.content.ClipData;
+import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -60,6 +62,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
         private boolean isContinue = false;
         private Button openinbrowser_card;
         private Button buildOnBtn;
+        private TextView changeNickname;
 
 
         SiteHolder(View itemView, TimerStarter timerStarter) {
@@ -76,6 +79,7 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
             secondStarter = timerStarter;
             openinbrowser_card = itemView.findViewById(R.id.openinbrowser_card);
             buildOnBtn = itemView.findViewById(R.id.buildOnElement_card);
+            changeNickname = itemView.findViewById(R.id.changeNickname);
 
             appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
             numOfBindOnElements = appSharedPrefs.getInt("numofbindonelements", 0 );
@@ -148,6 +152,77 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
                         }
                     }
 
+                }
+            });
+
+
+            changeNickname.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    final CheckBox dontShowAgain;
+                    AlertDialog.Builder adb = new AlertDialog.Builder(context);
+                    LayoutInflater adbInflater = LayoutInflater.from(context);
+                    View eulaLayout = adbInflater.inflate(R.layout.checkbox, null);
+                    SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+                    String skipMessage = settings.getString("skipMessage", "NOT checked");
+
+                    dontShowAgain =  eulaLayout.findViewById(R.id.skip);
+                    adb.setView(eulaLayout);
+                    adb.setTitle("Открыть приложение Steam и скопировать то что нужно вставить в ник?");
+
+                    adb.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            String checkBoxResult = "NOT checked";
+
+                            if (dontShowAgain.isChecked()) {
+                                checkBoxResult = "checked";
+                            }
+
+                            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+                            SharedPreferences.Editor editor = settings.edit();
+
+                            editor.putString("skipNickNameMessage", checkBoxResult);
+                            editor.apply();
+
+                            ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                            ClipData clip = ClipData.newPlainText("Copied", MainActivity.mSites.get(getAdapterPosition()).getSite_nickName());
+                            assert cm != null;
+                            cm.setPrimaryClip(clip);
+                            MainActivity.openSteamApp(context);
+
+                        }
+                    });
+
+                    adb.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            String checkBoxResult = "NOT checked";
+
+                            if (dontShowAgain.isChecked()) {
+                                checkBoxResult = "checked";
+                            }
+
+                            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+                            SharedPreferences.Editor editor = settings.edit();
+
+                            editor.putString("skipNickNameMessage", checkBoxResult);
+                            editor.apply();
+
+                            // Do what you want to do on "CANCEL" action
+
+                        }
+                    });
+
+                    if (!skipMessage.equals("checked")) {
+                        adb.show();
+                    } else {
+
+
+                        ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                        ClipData clip = ClipData.newPlainText("Copied", MainActivity.mSites.get(getAdapterPosition()).getSite_nickName());
+                        assert cm != null;
+                        cm.setPrimaryClip(clip);
+                        MainActivity.openSteamApp(context);
+                    }
                 }
             });
 

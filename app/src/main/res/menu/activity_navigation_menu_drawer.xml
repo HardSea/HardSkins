@@ -20,11 +20,19 @@
             android:icon="@drawable/ico_star"
             android:title="Оцените нас" />
 
+        <item
+            android:id="@+id/nav_calc"
+            android:icon="@drawable/ico_calc"
+            android:title="Калькулятор"/>
+
+        <item android:id="@+id/nav_steam"
+            android:title="Открыть стим"/>
 
         <item
             android:id="@+id/nav_aboutus"
             android:icon="@drawable/ico_info"
             android:title="О програме" />
+
 
     </group>
 

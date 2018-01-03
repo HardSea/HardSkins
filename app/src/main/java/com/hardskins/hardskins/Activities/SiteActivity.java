@@ -234,4 +234,69 @@ public class SiteActivity extends AppCompatActivity {
 
 
     }
+
+    public void openinbrowserRefLink(View view) {
+        if (mySite.getSite_ref_code().equals("")) {
+
+
+        AlertDialog.Builder adb = new AlertDialog.Builder(this);
+        LayoutInflater adbInflater = LayoutInflater.from(this);
+        View eulaLayout = adbInflater.inflate(R.layout.checkbox, null);
+        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(SiteActivity.this);
+        String skipMessage = settings.getString("skipMessage", "NOT checked");
+
+        dontShowAgain = eulaLayout.findViewById(R.id.skip);
+        adb.setView(eulaLayout);
+        adb.setTitle("Открыть сайт в браузере?");
+
+        adb.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                String checkBoxResult = "NOT checked";
+
+                if (dontShowAgain.isChecked()) {
+                    checkBoxResult = "checked";
+                }
+
+                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(SiteActivity.this);
+                SharedPreferences.Editor editor = settings.edit();
+
+                editor.putString("skipMessage", checkBoxResult);
+                editor.apply();
+
+                Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(mySite.getSite_ref_link()));
+                startActivity(browserIntent);
+
+            }
+        });
+
+        adb.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int which) {
+                String checkBoxResult = "NOT checked";
+
+                if (dontShowAgain.isChecked()) {
+                    checkBoxResult = "checked";
+                }
+
+                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(SiteActivity.this);
+                SharedPreferences.Editor editor = settings.edit();
+
+                editor.putString("skipMessage", checkBoxResult);
+                editor.apply();
+
+                // Do what you want to do on "CANCEL" action
+
+            }
+        });
+
+        if (!skipMessage.equals("checked")) {
+            adb.show();
+        } else {
+            Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(mySite.getSite_ref_link()));
+            startActivity(browserIntent);
+        }
+    } else {
+            openinbrowser(view);
+        }
+
+    }
 }
