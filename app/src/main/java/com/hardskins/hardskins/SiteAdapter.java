@@ -128,10 +128,12 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
                         Site tempSite = sites.get(tempPosition);
                         if (b) {
                             if (!isContinue) {
-                                long timeBonusBySite = tempSite.getSite_free_bonus_hour_time();
+                                appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
+                                long beforeTimeNotify = appSharedPrefs.getLong("before_time", 0);
+                                long timeBonusBySite = tempSite.getSite_free_bonus_hour_time() - beforeTimeNotify;
                                 Date date = new Date();
                                 long timeStartTimer = date.getTime();
-                                long timeEndTimer = timeStartTimer + timeBonusBySite;
+                                long timeEndTimer = timeStartTimer + timeBonusBySite - beforeTimeNotify;
 
                                 appSharedPrefs = PreferenceManager.getDefaultSharedPreferences(context);
                                 prefsEditor = appSharedPrefs.edit();
@@ -155,76 +157,81 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
                 }
             });
 
+            if(appSharedPrefs.getBoolean("show_change_nickname_btn", false)) {
+                changeNickname.setVisibility(View.INVISIBLE);
+            } else {
 
-            changeNickname.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View view) {
-                    final CheckBox dontShowAgain;
-                    AlertDialog.Builder adb = new AlertDialog.Builder(context);
-                    LayoutInflater adbInflater = LayoutInflater.from(context);
-                    View eulaLayout = adbInflater.inflate(R.layout.checkbox, null);
-                    SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-                    String skipMessage = settings.getString("skipMessage", "NOT checked");
 
-                    dontShowAgain =  eulaLayout.findViewById(R.id.skip);
-                    adb.setView(eulaLayout);
-                    adb.setTitle("Открыть приложение Steam и скопировать то что нужно вставить в ник?");
+                changeNickname.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+                        final CheckBox dontShowAgain;
+                        AlertDialog.Builder adb = new AlertDialog.Builder(context);
+                        LayoutInflater adbInflater = LayoutInflater.from(context);
+                        View eulaLayout = adbInflater.inflate(R.layout.checkbox, null);
+                        SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+                        String skipMessage = settings.getString("skipMessage", "NOT checked");
 
-                    adb.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            String checkBoxResult = "NOT checked";
+                        dontShowAgain = eulaLayout.findViewById(R.id.skip);
+                        adb.setView(eulaLayout);
+                        adb.setTitle("Открыть приложение Steam и скопировать ник?");
 
-                            if (dontShowAgain.isChecked()) {
-                                checkBoxResult = "checked";
+                        adb.setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                String checkBoxResult = "NOT checked";
+
+                                if (dontShowAgain.isChecked()) {
+                                    checkBoxResult = "checked";
+                                }
+
+                                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+                                SharedPreferences.Editor editor = settings.edit();
+
+                                editor.putString("skipNickNameMessage", checkBoxResult);
+                                editor.apply();
+
+                                ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
+                                ClipData clip = ClipData.newPlainText("Copied", MainActivity.mSites.get(getAdapterPosition()).getSite_nickName());
+                                assert cm != null;
+                                cm.setPrimaryClip(clip);
+                                MainActivity.openSteamApp(context);
+
                             }
+                        });
 
-                            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-                            SharedPreferences.Editor editor = settings.edit();
+                        adb.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int which) {
+                                String checkBoxResult = "NOT checked";
 
-                            editor.putString("skipNickNameMessage", checkBoxResult);
-                            editor.apply();
+                                if (dontShowAgain.isChecked()) {
+                                    checkBoxResult = "checked";
+                                }
+
+                                SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
+                                SharedPreferences.Editor editor = settings.edit();
+
+                                editor.putString("skipNickNameMessage", checkBoxResult);
+                                editor.apply();
+
+                                // Do what you want to do on "CANCEL" action
+
+                            }
+                        });
+
+                        if (!skipMessage.equals("checked")) {
+                            adb.show();
+                        } else {
+
 
                             ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
                             ClipData clip = ClipData.newPlainText("Copied", MainActivity.mSites.get(getAdapterPosition()).getSite_nickName());
                             assert cm != null;
                             cm.setPrimaryClip(clip);
                             MainActivity.openSteamApp(context);
-
                         }
-                    });
-
-                    adb.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            String checkBoxResult = "NOT checked";
-
-                            if (dontShowAgain.isChecked()) {
-                                checkBoxResult = "checked";
-                            }
-
-                            SharedPreferences settings = PreferenceManager.getDefaultSharedPreferences(context);
-                            SharedPreferences.Editor editor = settings.edit();
-
-                            editor.putString("skipNickNameMessage", checkBoxResult);
-                            editor.apply();
-
-                            // Do what you want to do on "CANCEL" action
-
-                        }
-                    });
-
-                    if (!skipMessage.equals("checked")) {
-                        adb.show();
-                    } else {
-
-
-                        ClipboardManager cm = (ClipboardManager) context.getSystemService(Context.CLIPBOARD_SERVICE);
-                        ClipData clip = ClipData.newPlainText("Copied", MainActivity.mSites.get(getAdapterPosition()).getSite_nickName());
-                        assert cm != null;
-                        cm.setPrimaryClip(clip);
-                        MainActivity.openSteamApp(context);
                     }
-                }
-            });
+                });
+            }
 
             openinbrowser_card.setOnClickListener(new View.OnClickListener() {
                 @Override
@@ -303,14 +310,15 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
                         @Override
                         public void onTimeSet(TimePicker timePicker, int selectedHour, int selectedMinute) {
                             isContinue = false;
+                            int tempPosition = getIndexByName(String.valueOf(sitename.getText()));
                             switchOff();
+                            secondStarter.stopServiceTimer(tempPosition);
                             switchNotify.setChecked(false);
                             Date date = new Date();
                             long currentTimeDate = date.getTime();
                             long timeSet = ((selectedHour * 3600000) + (selectedMinute * 60000)) + currentTimeDate;
                             prefsEditor.putLong(sitename.getText() + "time end timer", timeSet);
                             prefsEditor.apply();
-                            int tempPosition = getIndexByName(String.valueOf(sitename.getText()));
 
                             isContinue = true;
                             long selectedTime = (selectedHour * 3600000) + (selectedMinute * 60000);

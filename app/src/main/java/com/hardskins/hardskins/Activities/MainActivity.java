@@ -229,7 +229,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         try{
             Log.d(TAG, "Size of loading array = " + mSites.size());
         } catch (java.lang.NullPointerException e){
-
+            Log.d("Eror", "Eror");
         }
     } //load saved data from sharedpreference
 
@@ -460,7 +460,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     @Override
     protected void onDestroy() {
         stopService(new Intent(this, BroadcastService.class));
-        Log.i("BroadcastService", "Stopped service");
+        Log.i("BroadcastService", "Calling on Destroy");
         for (int i = 0; i < mSites.size(); i++) {
             stopServiceTimer(i);
 
@@ -472,15 +472,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
 
-    private int getIndexByname(String timerName)
-    {
-        for(Site _item : mSites)
-        {
-            if(_item.getSite_name().equals(timerName))
-                return mSites.indexOf(_item);
-        }
-        return -1;
-    }
+
 
 
     @Override

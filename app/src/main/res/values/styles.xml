@@ -35,7 +35,7 @@
 
 
     <style name="MenuLabelsStyle">
-        <item name="android:background">@drawable/ic_launcher_background</item>
+        <item name="android:background">@mipmap/ic_launcher_logo</item>
         <item name="android:textColor">#FFFFFF</item>
         <item name="android:textSize">14sp</item>
         <item name="android:maxLines">2</item>

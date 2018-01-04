@@ -1,7 +1,6 @@
 package com.hardskins.hardskins;
 
 
-import android.app.AlarmManager;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -10,6 +9,7 @@ import android.app.TaskStackBuilder;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.net.Uri;
 import android.os.CountDownTimer;
 import android.os.IBinder;
 import android.os.Vibrator;
@@ -30,14 +30,9 @@ public class BroadcastService extends Service {
     private final static String TAG = "BroadcastService";
     private int cnt_service = 0;
     private List<Timer> mTimers = new ArrayList<>();
-    private SharedPreferences appSharedPrefs;
-    private SharedPreferences.Editor prefsEditor;
     private Context context = this;
     private int position;
-    private long timeService;
-    private String nameTimerService;
-    private AlarmManager myAlarmService;
-    private PendingIntent restartPendingIntent;
+
 
 
     @Override
@@ -55,8 +50,6 @@ public class BroadcastService extends Service {
             long time = (intent.getLongExtra("time", 0));
             String currentTimer = intent.getStringExtra("nameSite");
             position = getIndexBynameSite(currentTimer);
-            timeService = time;
-            nameTimerService = currentTimer;
             Timer timer = new Timer(time, currentTimer);
             timer.startTimer();
             mTimers.add(timer);
@@ -68,6 +61,7 @@ public class BroadcastService extends Service {
             String nameSite = intent.getStringExtra("nameSite");
             try{
                 mTimers.get(getIndexByname(nameSite)).stopTimer();
+                Log.d(TAG, "Stooping timer in SERVICE_STOP");
                 mTimers.remove(getIndexByname(nameSite));
                 cnt_service--;
             } catch(java.lang.ArrayIndexOutOfBoundsException e){
@@ -83,10 +77,6 @@ public class BroadcastService extends Service {
             long time = intent.getLongExtra("time", 0);
             String currentTimer = intent.getStringExtra("nameSite");
             position = getIndexBynameSite(currentTimer);
-
-            timeService = time;
-            nameTimerService = currentTimer;
-
             Timer timer = new Timer(time, currentTimer);
             timer.startTimer();
             mTimers.add(timer);
@@ -102,26 +92,7 @@ public class BroadcastService extends Service {
 
     }
 
-//    @Override
-//    public void onTaskRemoved(Intent rootIntent) {
-//        for (int i = 0; i < mTimers.size(); i++) {
-//            Intent restartServiceTask = new Intent(getApplicationContext(),this.getClass());
-//            restartServiceTask.putExtra("time", mTimers.get(i).getTimeServiceTime());
-//            restartServiceTask.putExtra("nameSite", mTimers.get(i).getNameTimer());
-//            restartServiceTask.setAction("SERVICE_CONTINUE");
-//            restartServiceTask.setPackage(getPackageName());
-//            restartPendingIntent = PendingIntent.getService(getApplicationContext(), 1,restartServiceTask, PendingIntent.FLAG_ONE_SHOT);
-//            myAlarmService = (AlarmManager) getApplicationContext().getSystemService(Context.ALARM_SERVICE);
-//            assert myAlarmService != null;
-//            myAlarmService.set(
-//                    AlarmManager.ELAPSED_REALTIME,
-//                    SystemClock.elapsedRealtime() + 1000,
-//                    restartPendingIntent);
-//        }
-//
-//
-//        super.onTaskRemoved(rootIntent);
-//    }
+
 
     private int getIndexBynameSite(String pName) {
         for (Site _item : MainActivity.mSites) {
@@ -144,16 +115,13 @@ public class BroadcastService extends Service {
         return null;
     }
 
+
+
     class Timer extends Vibration {
         String nameTimer;
         private CountDownTimer timer;
         protected long time;
         long timeServiceTime;
-
-        long getTimeServiceTime(){
-            return timeServiceTime;
-        }
-
 
 
         Timer(long t, String name) {
@@ -176,12 +144,6 @@ public class BroadcastService extends Service {
                 @Override
                 public void onFinish() {
                     String nameSite = nameTimer;
-//                    try {
-//                        myAlarmService.cancel(restartPendingIntent);
-//
-//                    } catch (NullPointerException e){
-//                        Log.d("BroadcastService", "Error Finish");
-//                    }
 
                     Intent resultIntent = new Intent(BroadcastService.this, MainActivity.class);
                     TaskStackBuilder stackBuilder = TaskStackBuilder.create(BroadcastService.this);
@@ -192,16 +154,18 @@ public class BroadcastService extends Service {
                                     0,
                                     PendingIntent.FLAG_UPDATE_CURRENT
                             );
-                    PendingIntent pIntent = PendingIntent.getActivity(BroadcastService.this, 0, resultIntent, 0);
+                    Intent browserIntent = new Intent(Intent.ACTION_VIEW, Uri.parse(MainActivity.mSites.get(position).getSite_free_bonus_link()));
+                    PendingIntent pIntentBrowser = PendingIntent.getActivity(BroadcastService.this, 0, browserIntent, 0);
+
 
                     NotificationCompat.Builder mBuilder =
                             new NotificationCompat.Builder(context, ALARM_SERVICE)
-                                    .setSmallIcon(R.mipmap.ic_launcher)
+                                    .setSmallIcon(R.drawable.ic_launcher_small)
                                     .setContentTitle("Ваш бонус готов!")
                                     .setContentText(nameSite)
+                                    .setAutoCancel(true)
                                     .setPriority(MAX_PRIORITY)
-                                    .addAction(R.mipmap.ic_launcher, "Открыть сайт", pIntent)
-                                    .addAction(R.mipmap.ic_launcher, "Выключить уведомления", pIntent)
+                                    .addAction(R.drawable.ic_launcher_small, "Открыть сайт", pIntentBrowser)
                                     .setLights(10, 10, 10)
                                     .setDefaults(Notification.DEFAULT_SOUND | Notification.DEFAULT_LIGHTS);
                     mBuilder.setContentIntent(resultPendingIntent);

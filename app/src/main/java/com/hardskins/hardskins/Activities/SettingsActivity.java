@@ -36,6 +36,7 @@ public class SettingsActivity extends AppCompatPreferenceActivity{
         public boolean onPreferenceChange(Preference preference, Object value) {
             String stringValue = value.toString();
 
+
             if (preference instanceof ListPreference) {
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(preference.getContext());
                 SharedPreferences.Editor editor = prefs.edit();
@@ -60,6 +61,20 @@ public class SettingsActivity extends AppCompatPreferenceActivity{
 
                         preference.setSummary(preference.getContext().getResources().getStringArray(R.array.pref_time_of_vibration)[indexTime-1]);
                         break;
+
+                    case "before_notify":
+                        Log.d("SettingsHardSkins", "select before notify time");
+                        try {
+                            editor.putLong("before_time", Long.parseLong(stringValue));
+                            editor.apply();
+                        }catch(NumberFormatException ex){
+                            Log.d("SettingsHardSkins", "select before notify time ERROR");
+
+                        }
+
+                        Log.d("SettingsHardSkins", "select before notify time " + prefs.getLong("before_time", 0));
+
+                        break;
                     default:
                         break;
 
@@ -68,14 +83,21 @@ public class SettingsActivity extends AppCompatPreferenceActivity{
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(preference.getContext());
                 SharedPreferences.Editor editor = prefs.edit();
                 switch (preference.getKey()){
-                    case "switch_preference_load_pictures":
-                        Log.d("HardSkins", "select load pictures");
+                    case "load_pictures":
+                        Log.d("SettingsHardSkins", "select load pictures");
                         editor.putBoolean("load_pictures", prefs.getBoolean("load_pictures", true));
                         editor.apply();
                         ((SwitchPreference) preference).setChecked(prefs.getBoolean("load_pictures", true));
                         break;
+                    case "show_change_nickname_btn":
+                        Log.d("SettingsHardSkins", "select show nickaname btn");
+                        editor.putBoolean("show_change_nickname_btn", prefs.getBoolean("show_change_nickname_btn", false));
+                        editor.apply();
+                        ((SwitchPreference) preference).setChecked(prefs.getBoolean("show_change_nickname_btn", false));
+                        break;
                 }
             }
+
             return true;
         }
     };
@@ -137,6 +159,8 @@ public class SettingsActivity extends AppCompatPreferenceActivity{
             setHasOptionsMenu(true);
             bindPreferenceSummaryToValue(findPreference("vibration_count"), 1);
             bindPreferenceSummaryToValue(findPreference("vibration_time"), 1);
+            bindPreferenceSummaryToValue(findPreference("before_notify"), 1);
+
 
         }
 

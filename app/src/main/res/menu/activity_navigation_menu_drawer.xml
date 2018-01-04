@@ -26,6 +26,7 @@
             android:title="Калькулятор"/>
 
         <item android:id="@+id/nav_steam"
+            android:icon="@drawable/ico_steam"
             android:title="Открыть стим"/>
 
         <item

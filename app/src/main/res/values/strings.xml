@@ -48,6 +48,22 @@
         <item>5</item>
     </string-array>
 
+    <string name="pref_title_select_before_notification">Уведомлять заранее</string>
+    <string-array name="pref_num_of_before_time">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>5</item>
+        <item>10</item>
+    </string-array>
+    <string-array name="pref_num_of_before_time_values">
+        <item>0</item>
+        <item>60000</item>
+        <item>120000</item>
+        <item>300000</item>
+        <item>600000</item>
+    </string-array>
+
     <string name="pref_title_select_time_of_vibrate">Длинна вибрации</string>
     <string-array name="pref_time_of_vibration">
         <item>Короткая</item>

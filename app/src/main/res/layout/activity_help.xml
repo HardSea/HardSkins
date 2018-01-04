@@ -76,6 +76,13 @@
                 />
         </LinearLayout>
 
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="150dp"
+            android:gravity="center"
+            android:textColor="#ff0004"
+            android:text="Если вы хотите чтобы таймер точно сработал, то не выгружайте приложение с памяти. Просто закройте его"/>
+
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"

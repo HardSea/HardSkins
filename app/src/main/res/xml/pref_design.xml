@@ -5,4 +5,10 @@
         android:defaultValue="true"
         android:key="load_pictures"
         android:title="@string/preference_load_pictures_text" />
+
+    <SwitchPreference
+        android:defaultValue="false"
+        android:key="show_change_nickname_btn"
+        android:title="Скрыть клавишу `Сменить ник`" />
+
 </PreferenceScreen>

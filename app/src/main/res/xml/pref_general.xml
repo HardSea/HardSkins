@@ -21,4 +21,15 @@
 
     </ListPreference>
 
+    <ListPreference
+        android:key="before_notify"
+        android:entries="@array/pref_num_of_before_time"
+        android:entryValues="@array/pref_num_of_before_time_values"
+        android:title="Уведомлять заранее"
+        android:defaultValue="0"
+        android:negativeButtonText="@null"
+        android:positiveButtonText="@null"
+
+        />
+
 </PreferenceScreen>
