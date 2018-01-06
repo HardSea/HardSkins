@@ -27,7 +27,9 @@ import static java.lang.Thread.MAX_PRIORITY;
 
 public class BroadcastService extends Service {
 
-    private final static String TAG = "BroadcastService";
+    private final static String TAG = "bradk";
+    private final static String TAG2 = "abradk";
+
     private int cnt_service = 0;
     private List<Timer> mTimers = new ArrayList<>();
     private Context context = this;
@@ -41,6 +43,12 @@ public class BroadcastService extends Service {
         super.onDestroy();
     }
 
+    @Override
+    public void onTaskRemoved(Intent rootIntent) {
+
+        mTimers.clear();
+        super.onTaskRemoved(rootIntent);
+    }
 
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
@@ -50,26 +58,47 @@ public class BroadcastService extends Service {
             long time = (intent.getLongExtra("time", 0));
             String currentTimer = intent.getStringExtra("nameSite");
             position = getIndexBynameSite(currentTimer);
-            Timer timer = new Timer(time, currentTimer);
-            timer.startTimer();
-            mTimers.add(timer);
+            Log.d(TAG2, "Trying add timer Size: " + mTimers.size());
 
-            cnt_service++;
-            Log.d(TAG, "Calling onStart command");
-            Log.d(TAG, "Count service = " + cnt_service);
-        } else if ("SERVICE_STOP".equals(intent.getAction())) {
-            String nameSite = intent.getStringExtra("nameSite");
-            try{
-                mTimers.get(getIndexByname(nameSite)).stopTimer();
-                Log.d(TAG, "Stooping timer in SERVICE_STOP");
-                mTimers.remove(getIndexByname(nameSite));
-                cnt_service--;
-            } catch(java.lang.ArrayIndexOutOfBoundsException e){
-                Log.d(TAG, "Not exist timer has been off");
+            if (mTimers.size() == 0){
+                Timer timer = new Timer(time, currentTimer);
+                timer.startTimer();
+                mTimers.add(timer);
+                cnt_service++;
+                Log.d(TAG2, "Successful added timer in arrayList!");
+            }
+
+            for (int i = 0; i < mTimers.size(); i++) {
+
+                if (!mTimers.get(i).getNameTimer().equals(currentTimer)){
+                    Log.d(TAG2, mTimers.get(i).getNameTimer());
+                    Log.d(TAG2, currentTimer);
+
+                    Timer timer = new Timer(time, currentTimer);
+                    timer.startTimer();
+                    mTimers.add(timer);
+                    cnt_service++;
+                    Log.d(TAG2, "Successful added timer in arrayList!");
+                }
             }
 
 
 
+            Log.d(TAG, "Calling onStart command");
+            Log.d(TAG, "Count service = " + cnt_service);
+        } else if ("SERVICE_STOP".equals(intent.getAction())) {
+            String nameSite = intent.getStringExtra("nameSite");
+
+                for (int i = 0; i < mTimers.size(); i++) {
+                    try{
+                    mTimers.get(getIndexByname(nameSite)).stopTimer();
+                    Log.d(TAG, "Stooping timer in SERVICE_STOP");
+                    mTimers.remove(getIndexByname(nameSite));
+                    cnt_service--;
+                    } catch(java.lang.ArrayIndexOutOfBoundsException e){
+                        Log.d(TAG, "Not exist timer has been off");
+                    }
+                }
             Log.d(TAG, "Calling onStop command");
             Log.d(TAG, "Count service = " + cnt_service);
 
@@ -77,11 +106,19 @@ public class BroadcastService extends Service {
             long time = intent.getLongExtra("time", 0);
             String currentTimer = intent.getStringExtra("nameSite");
             position = getIndexBynameSite(currentTimer);
-            Timer timer = new Timer(time, currentTimer);
-            timer.startTimer();
-            mTimers.add(timer);
+            Log.d(TAG2, "Trying add timer in CONTINUE Size: " + mTimers.size());
 
-            cnt_service++;
+            for (int i = 0; i < mTimers.size(); i++) {
+                if (!mTimers.get(i).getNameTimer().equals(currentTimer)){
+                    Timer timer = new Timer(time, currentTimer);
+                    timer.startTimer();
+                    mTimers.add(timer);
+                    cnt_service++;
+                    Log.d(TAG2, "Successful added timer in arrayList! in CONTINUE" + cnt_service);
+
+                }
+            }
+
             Log.d(TAG, "Calling onStart command");
             Log.d(TAG, "Count service = " + cnt_service);
         }
@@ -91,6 +128,8 @@ public class BroadcastService extends Service {
 
 
     }
+
+
 
 
 
@@ -137,7 +176,7 @@ public class BroadcastService extends Service {
             timer = new CountDownTimer(time, 1000) {
                 @Override
                 public void onTick(long l) {
-                    Log.d("BroadcastService", nameTimer + " countdown timer seconds reamaning: " + l / 1000);
+                    Log.d("bradk", nameTimer + " countdown timer seconds reamaning: " + l / 1000);
                     timeServiceTime = l;
                 }
 

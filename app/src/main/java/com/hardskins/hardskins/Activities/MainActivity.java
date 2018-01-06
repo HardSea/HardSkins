@@ -304,6 +304,8 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         LinearLayoutManager linearManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearManager);
 
+        linearManager.setAutoMeasureEnabled(false);
+
         siteAdapter = new SiteAdapter(mSites, context, this);
         recyclerView.setAdapter(siteAdapter);
 
