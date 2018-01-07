@@ -101,23 +101,24 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         createNavigationMenu();
         cnt_timer = appSharedPrefs.getInt("count timer", 0);
 
+        for (int i = 0; i < mSites.size(); i++) {
+            if (appshared.getBoolean(mSites.get(i).getSite_name() + "site is notify", false)){
+                startServiceTimer(i, mSites.get(i).getSite_free_bonus_hour_time());
+                Log.d("abradk", "Initialize timers in MAINACTIVITY");
+            }
+        }
+
         createRecyclerView();         //creating recyclerview and refreshing new changes in recycler view
         signInFireBase();             // signInAnonymusly to FireBase
 
 
 
 
-        boolean b = isOnline();
-        if (b){
-            Toast.makeText(this,"You are online!", Toast.LENGTH_SHORT).show();
-        } else {
-            Toast.makeText(this,"You are offline!", Toast.LENGTH_SHORT).show();
-
-        }
-
 
 
     }
+
+
 
     @Override
     public void startServiceTimer(int position, long time){

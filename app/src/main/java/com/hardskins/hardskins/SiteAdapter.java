@@ -547,8 +547,8 @@ public class SiteAdapter extends RecyclerView.Adapter<SiteAdapter.SiteHolder> {
 
             siteHolder.textDate.setVisibility(View.VISIBLE);
             siteHolder.startTimer(setTime);
-            siteHolder.secondStarter.continueServicetimer(tempPosition, String.valueOf(siteHolder.sitename.getText().toString()));
-            Log.d("HardSkins", "On bindHolder " + siteHolder.sitename.getText().toString());
+            siteHolder.secondStarter.startServiceTimer(tempPosition, MainActivity.mSites.get(position).getSite_free_bonus_hour_time());
+            Log.d("HardSkins", "On bindHolder SUCCESS" + siteHolder.sitename.getText().toString());
         } else {
             siteHolder.switchNotify.setChecked(false);
             siteHolder.textDate.setVisibility(View.INVISIBLE);

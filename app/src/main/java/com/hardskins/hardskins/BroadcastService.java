@@ -58,9 +58,9 @@ public class BroadcastService extends Service {
             long time = (intent.getLongExtra("time", 0));
             String currentTimer = intent.getStringExtra("nameSite");
             position = getIndexBynameSite(currentTimer);
-            Log.d(TAG2, "Trying add timer Size: " + mTimers.size());
+            Log.d(TAG2, "Trying add timer in START Size: " + mTimers.size());
 
-            if (mTimers.size() == 0){
+            if (mTimers.size() == 0) {
                 Timer timer = new Timer(time, currentTimer);
                 timer.startTimer();
                 mTimers.add(timer);
@@ -68,19 +68,30 @@ public class BroadcastService extends Service {
                 Log.d(TAG2, "Successful added timer in arrayList!");
             }
 
+            int cnt = 0;
+
             for (int i = 0; i < mTimers.size(); i++) {
 
-                if (!mTimers.get(i).getNameTimer().equals(currentTimer)){
+                if (mTimers.get(i).getNameTimer().equals(currentTimer)){
                     Log.d(TAG2, mTimers.get(i).getNameTimer());
-                    Log.d(TAG2, currentTimer);
-
-                    Timer timer = new Timer(time, currentTimer);
-                    timer.startTimer();
-                    mTimers.add(timer);
-                    cnt_service++;
-                    Log.d(TAG2, "Successful added timer in arrayList!");
+                    cnt++;
+                    Log.d(TAG2, "Количество одинаковых: " + String.valueOf(cnt));
                 }
             }
+
+            if (cnt == 0){
+
+                Log.d(TAG2, currentTimer);
+
+                Timer timer = new Timer(time, currentTimer);
+                timer.startTimer();
+                mTimers.add(timer);
+                cnt_service++;
+                Log.d(TAG2, "Successful added timer in arrayList!");
+
+            }
+
+
 
 
 
@@ -103,21 +114,37 @@ public class BroadcastService extends Service {
             Log.d(TAG, "Count service = " + cnt_service);
 
         } else if ("SERVICE_CONTINUE".equals(intent.getAction())) {
+
             long time = intent.getLongExtra("time", 0);
             String currentTimer = intent.getStringExtra("nameSite");
             position = getIndexBynameSite(currentTimer);
             Log.d(TAG2, "Trying add timer in CONTINUE Size: " + mTimers.size());
 
+//            for (int i = 0; i < mTimers.size(); i++) {
+//                if (!mTimers.get(i).getNameTimer().equals(currentTimer)){
+//                    Timer timer = new Timer(time, currentTimer);
+//                    timer.startTimer();
+//                    mTimers.add(timer);
+//                    cnt_service++;
+//                    Log.d(TAG2, "Successful added timer in arrayList! in CONTINUE" + cnt_service);
+//
+//                }
+//            }
+
+
             for (int i = 0; i < mTimers.size(); i++) {
-                if (!mTimers.get(i).getNameTimer().equals(currentTimer)){
+                Timer item = mTimers.get(i);
+                if (mTimers.contains(item)) { // <- look for item!
+                    // ... item already in list
+                } else {
                     Timer timer = new Timer(time, currentTimer);
                     timer.startTimer();
                     mTimers.add(timer);
                     cnt_service++;
                     Log.d(TAG2, "Successful added timer in arrayList! in CONTINUE" + cnt_service);
-
                 }
             }
+
 
             Log.d(TAG, "Calling onStart command");
             Log.d(TAG, "Count service = " + cnt_service);
