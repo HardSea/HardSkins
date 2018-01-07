@@ -132,6 +132,14 @@ public class BroadcastService extends Service {
 //            }
 
 
+            if (mTimers.size() == 0) {
+                Timer timer = new Timer(time, currentTimer);
+                timer.startTimer();
+                mTimers.add(timer);
+                cnt_service++;
+                Log.d(TAG2, "Successful added timer in arrayList in CONTINUE FIRST ELEMENT! ");
+            }
+
             for (int i = 0; i < mTimers.size(); i++) {
                 Timer item = mTimers.get(i);
                 if (mTimers.contains(item)) { // <- look for item!

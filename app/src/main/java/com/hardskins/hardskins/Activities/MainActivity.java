@@ -103,7 +103,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         for (int i = 0; i < mSites.size(); i++) {
             if (appshared.getBoolean(mSites.get(i).getSite_name() + "site is notify", false)){
-                startServiceTimer(i, mSites.get(i).getSite_free_bonus_hour_time());
+                continueServicetimer(mSites.get(i).getSite_name());
                 Log.d("abradk", "Initialize timers in MAINACTIVITY");
             }
         }
@@ -133,7 +133,7 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
     }
 
     @Override
-    public void continueServicetimer(int position, String nameSite) {
+    public void continueServicetimer(String nameSite) {
 
 
 
@@ -149,10 +149,10 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
 
         startService(new Intent(this, BroadcastService.class)
                 .putExtra("time", setTime)
-                .putExtra("nameSite", mSites.get(position).getSite_name())
+                .putExtra("nameSite", nameSite)
                 .setAction("SERVICE_CONTINUE"));
 
-        Log.d("BroadcastService", "Started service");
+        Log.d("BroadcastService", "Continue service");
     }
 
 
@@ -304,8 +304,6 @@ public class MainActivity extends AppCompatActivity implements NavigationView.On
         RecyclerView recyclerView = findViewById(R.id.recycler_view);
         LinearLayoutManager linearManager = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(linearManager);
-
-        linearManager.setAutoMeasureEnabled(false);
 
         siteAdapter = new SiteAdapter(mSites, context, this);
         recyclerView.setAdapter(siteAdapter);
